@@ -1,4 +1,4 @@
-package com.helloIftekhar.springJwt.model;
+package com.helloIftekhar.springJwt.Bean;
 
 
 import jakarta.persistence.*;

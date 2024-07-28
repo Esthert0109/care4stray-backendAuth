@@ -1,6 +1,6 @@
-package com.helloIftekhar.springJwt.service;
+package com.helloIftekhar.springJwt.Service;
 
-import com.helloIftekhar.springJwt.repository.UserRepository;
+import com.helloIftekhar.springJwt.Repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

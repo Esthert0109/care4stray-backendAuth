@@ -1,16 +1,17 @@
-package com.helloIftekhar.springJwt.controller;
+package com.helloIftekhar.springJwt.Controller;
 
-import com.helloIftekhar.springJwt.model.AuthenticationResponse;
-import com.helloIftekhar.springJwt.model.User;
-import com.helloIftekhar.springJwt.service.AuthenticationService;
+import com.helloIftekhar.springJwt.DTO.UserDTO;
+import com.helloIftekhar.springJwt.Utils.Responses.AuthenticationResponse;
+import com.helloIftekhar.springJwt.Bean.User;
+import com.helloIftekhar.springJwt.Service.Auth.AuthenticationService;
+import com.helloIftekhar.springJwt.Utils.Responses.Response;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/care4stray/auth")
 public class AuthenticationController {
 
     private final AuthenticationService authService;

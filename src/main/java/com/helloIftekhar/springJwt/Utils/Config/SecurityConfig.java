@@ -1,8 +1,8 @@
-package com.helloIftekhar.springJwt.config;
+package com.helloIftekhar.springJwt.Utils.Config;
 
 
-import com.helloIftekhar.springJwt.filter.JwtAuthenticationFilter;
-import com.helloIftekhar.springJwt.service.UserDetailsServiceImp;
+import com.helloIftekhar.springJwt.Utils.Filter.JwtAuthenticationFilter;
+import com.helloIftekhar.springJwt.Service.UserDetailsServiceImp;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -43,7 +43,7 @@ public class SecurityConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
-                        req->req.requestMatchers("/login/**","/register/**", "/refresh_token/**")
+                        req->req.requestMatchers("/care4stray/auth/**")
                                 .permitAll()
                                 .requestMatchers("/admin_only/**").hasAuthority("ADMIN")
                                 .anyRequest()

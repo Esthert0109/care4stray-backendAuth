@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/spring_jwt
-    username: root
-    password: 1234
+    url: jdbc:mysql://care4stray-care4strays.d.aivencloud.com:14639/defaultdb
+    username: avnadmin
+    password: AVNS_RYBZfx2WTVGNfqaurpA
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:

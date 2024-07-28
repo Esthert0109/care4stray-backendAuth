@@ -1,6 +1,6 @@
-package com.helloIftekhar.springJwt.repository;
+package com.helloIftekhar.springJwt.Repository;
 
-import com.helloIftekhar.springJwt.model.Token;
+import com.helloIftekhar.springJwt.Bean.Token;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -19,4 +19,6 @@ where t.user.id = :userId and t.loggedOut = false
     Optional<Token> findByAccessToken(String token);
 
     Optional<Token > findByRefreshToken(String token);
+
+    Token findByAccessTokenAndUserId(String refreshToken, Integer userId);
 }
