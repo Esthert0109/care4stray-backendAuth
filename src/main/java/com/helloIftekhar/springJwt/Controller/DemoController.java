@@ -1,8 +1,11 @@
 package com.helloIftekhar.springJwt.Controller;
 
+import com.helloIftekhar.springJwt.Bean.News;
 import com.helloIftekhar.springJwt.Bean.User;
+import com.helloIftekhar.springJwt.DTO.NewsDTO;
 import com.helloIftekhar.springJwt.DTO.UserDTO;
 import com.helloIftekhar.springJwt.Service.Auth.AuthenticationService;
+import com.helloIftekhar.springJwt.Service.NewsService;
 import com.helloIftekhar.springJwt.Utils.Enum.UserStatus;
 import com.helloIftekhar.springJwt.Utils.Responses.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +19,9 @@ public class DemoController {
 
     @Autowired
     AuthenticationService authService;
+
+    @Autowired
+    NewsService newsService;
 
     @GetMapping("/demo")
     public ResponseEntity<String> demo() {
@@ -36,5 +42,14 @@ public class DemoController {
 
         UserStatus userStatus = UserStatus.valueOf(status.toUpperCase());
         return ResponseEntity.ok(authService.updateUserStatus(id, userStatus));
+    }
+
+    @PostMapping("/admin_only/news")
+    public ResponseEntity<Response<NewsDTO>> createNews(@RequestBody News request){
+        if(request == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        return ResponseEntity.ok(newsService.createNews(request));
     }
 }
