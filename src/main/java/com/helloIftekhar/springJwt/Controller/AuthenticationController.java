@@ -1,6 +1,7 @@
 package com.helloIftekhar.springJwt.Controller;
 
 import com.helloIftekhar.springJwt.DTO.UserDTO;
+import com.helloIftekhar.springJwt.Utils.Enum.UserStatus;
 import com.helloIftekhar.springJwt.Utils.Responses.AuthenticationResponse;
 import com.helloIftekhar.springJwt.Bean.User;
 import com.helloIftekhar.springJwt.Service.Auth.AuthenticationService;
@@ -42,4 +43,5 @@ public class AuthenticationController {
     ) {
         return authService.refreshToken(request, response);
     }
+
 }

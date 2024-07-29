@@ -11,6 +11,7 @@ import com.helloIftekhar.springJwt.Utils.Responses.AuthenticationResponse;
 import com.helloIftekhar.springJwt.Utils.Responses.Response;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -117,6 +118,21 @@ public class AuthenticationService {
 
         return new Response<>("success", updatedDto);
 
+    }
+
+    @Transactional
+    public Response<UserDTO> updateUserStatus(Integer id, UserStatus status ){
+        try {
+            User selectedUser = repository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+            selectedUser.setUserStatus(status);
+            repository.save(selectedUser);
+
+            UserDTO updatedDto = new UserDTO(selectedUser);
+
+            return new Response<UserDTO>("success", updatedDto);
+        } catch (RuntimeException e) {
+            return new Response<>("unsuccess", null);
+        }
     }
 
     private void revokeAllTokenByUser(User user) {
