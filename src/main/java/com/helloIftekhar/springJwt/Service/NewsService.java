@@ -15,8 +15,8 @@ public class NewsService {
     @Autowired
     NewsRepository newsRepository;
 
-    public Response<NewsDTO> createNews (News request) {
-        try{
+    public Response<NewsDTO> createNews(News request) {
+        try {
             News news = new News();
             news.setTitle(request.getTitle());
             news.setContent(request.getContent());
@@ -31,7 +31,28 @@ public class NewsService {
             NewsDTO createdNews = new NewsDTO(news);
 
             return new Response<>("success", createdNews);
-        }catch (Exception e){
+        } catch (Exception e) {
+            return new Response<>("unsuccess", null);
+        }
+    }
+
+
+    public Response<NewsDTO> updateNews(News request) {
+        try {
+
+            News updatedNews = newsRepository.findById(request.getId()).orElseThrow(() -> new RuntimeException("no news found"));
+            updatedNews.setTitle(request.getTitle());
+            updatedNews.setContent(request.getContent());
+            updatedNews.setAuthor(request.getAuthor());
+            updatedNews.setPic(request.getPic());
+            updatedNews.setStatus(request.getStatus());
+            updatedNews.setUpdatedDate(LocalDateTime.now());
+            newsRepository.save(updatedNews);
+
+            NewsDTO newsDTO = new NewsDTO(updatedNews);
+
+            return new Response<>("success", newsDTO);
+        } catch (Exception e) {
             return new Response<>("unsuccess", null);
         }
     }

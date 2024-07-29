@@ -49,7 +49,14 @@ public class DemoController {
         if(request == null) {
             return ResponseEntity.badRequest().build();
         }
-
         return ResponseEntity.ok(newsService.createNews(request));
+    }
+
+    @PatchMapping("/admin_only/news/update")
+    public ResponseEntity<Response<NewsDTO>> updateNews(@RequestBody News request) {
+        if(request == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(newsService.updateNews(request));
     }
 }

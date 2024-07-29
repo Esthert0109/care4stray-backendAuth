@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class NewsDTO {
-    private int id;
+    private Long id;
     private String title;
     private String author;
     private String content;
