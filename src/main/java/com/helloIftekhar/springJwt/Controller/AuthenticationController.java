@@ -26,14 +26,14 @@ public class AuthenticationController {
     public ResponseEntity<AuthenticationResponse> register(
             @RequestBody User request
             ) {
-        return ResponseEntity.ok(authService.register(request));
+        return authService.register(request);
     }
 
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponse> login(
             @RequestBody User request
     ) {
-        return ResponseEntity.ok(authService.authenticate(request));
+        return authService.authenticate(request);
     }
 
     @PostMapping("/refresh_token")

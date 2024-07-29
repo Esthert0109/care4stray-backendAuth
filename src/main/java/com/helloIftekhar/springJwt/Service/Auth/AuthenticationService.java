@@ -42,11 +42,11 @@ public class AuthenticationService {
         this.authenticationManager = authenticationManager;
     }
 
-    public AuthenticationResponse register(User request) {
+    public ResponseEntity<AuthenticationResponse> register(User request) {
 
         // check if user already exist. if exist than authenticate the user
         if (repository.findByUsername(request.getUsername()).isPresent()) {
-            return new AuthenticationResponse(null, null, "User already exist");
+            return ResponseEntity.badRequest().body(new AuthenticationResponse(null, null, "User already exist"));
         }
 
         try {
@@ -55,7 +55,7 @@ public class AuthenticationService {
             user.setLastName(request.getLastName());
             user.setUsername(request.getUsername());
             user.setPassword(passwordEncoder.encode(request.getPassword()));
-            user.setDateOfBirth(request.getDateOfBirth());
+            user.setGender(request.getGender());
             user.setUserStatus(UserStatus.ACTIVE);
             user.setRole(request.getRole());
 
@@ -66,27 +66,28 @@ public class AuthenticationService {
 
             saveUserToken(accessToken, refreshToken, user);
 
-            return new AuthenticationResponse(accessToken, refreshToken, "User registration was successful");
+            return ResponseEntity.ok(new AuthenticationResponse(accessToken, refreshToken, "User registration was successful"));
         } catch (Exception e) {
-            return new AuthenticationResponse(null, null, "Invalid registration");
+            return ResponseEntity.badRequest().body(new AuthenticationResponse(null, null, "Invalid registration")
+            );
         }
 
     }
 
-    public AuthenticationResponse authenticate(User request) {
-       try{
-           authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
-           User user = repository.findByUsername(request.getUsername()).orElseThrow(() -> new RuntimeException("User not found"));
-           String accessToken = jwtService.generateAccessToken(user);
-           String refreshToken = jwtService.generateRefreshToken(user);
+    public ResponseEntity<AuthenticationResponse> authenticate(User request) {
+        try {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+            User user = repository.findByUsername(request.getUsername()).orElseThrow(() -> new RuntimeException("User not found"));
+            String accessToken = jwtService.generateAccessToken(user);
+            String refreshToken = jwtService.generateRefreshToken(user);
 
-           revokeAllTokenByUser(user);
-           saveUserToken(accessToken, refreshToken, user);
+            revokeAllTokenByUser(user);
+            saveUserToken(accessToken, refreshToken, user);
 
-           return new AuthenticationResponse(accessToken, refreshToken, "User login was successful");
-       }catch (BadCredentialsException e) {
-           return new AuthenticationResponse(null, null, "Invalid username or password");
-       }
+            return ResponseEntity.ok(new AuthenticationResponse(accessToken, refreshToken, "User login was successful"));
+        } catch (BadCredentialsException e) {
+            return ResponseEntity.badRequest().body(new AuthenticationResponse(null, null, "Invalid username or password"));
+        }
     }
 
     public Response<UserDTO> getUserInfoDetails(String username) {
@@ -100,15 +101,15 @@ public class AuthenticationService {
         return new Response<>("success", userDetails);
     }
 
-    public Response<UserDTO> updateUserInfo(HttpServletRequest request,User user){
+    public Response<UserDTO> updateUserInfo(HttpServletRequest request, User user) {
         String token = extractTokenFromHeader(request);
 
-        if(token ==null || token==""){
+        if (token == null || token == "") {
             return new Response<>("unsuccess", null);
         }
 
         Token userToken = tokenRepository.findByAccessTokenAndUserId(token, user.getId());
-        if(userToken == null){
+        if (userToken == null) {
             return new Response<>("unsuccess", null);
         }
         repository.save(user);
@@ -121,7 +122,7 @@ public class AuthenticationService {
     }
 
     @Transactional
-    public Response<UserDTO> updateUserStatus(Integer id, UserStatus status ){
+    public Response<UserDTO> updateUserStatus(Integer id, UserStatus status) {
         try {
             User selectedUser = repository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
             selectedUser.setUserStatus(status);

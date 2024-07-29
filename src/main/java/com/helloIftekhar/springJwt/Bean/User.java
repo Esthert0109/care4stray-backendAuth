@@ -50,10 +50,10 @@ public class User implements UserDetails {
     private int phoneNumber;
 
     @Enumerated(value = EnumType.STRING)
-    @Column(name = "gender")
+    @Column(name = "gender", nullable = false)
     private Gender gender;
 
-    @Column(name = "dateOfBirth", nullable = false)
+    @Column(name = "dateOfBirth")
     private LocalDate dateOfBirth;
 
     @Column(name = "postal")
