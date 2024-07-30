@@ -8,6 +8,7 @@ import com.helloIftekhar.springJwt.Repository.TokenRepository;
 import com.helloIftekhar.springJwt.Repository.UserRepository;
 import com.helloIftekhar.springJwt.Utils.Enum.UserStatus;
 import com.helloIftekhar.springJwt.Utils.Responses.AuthenticationResponse;
+import com.helloIftekhar.springJwt.Utils.Responses.LoginResponse;
 import com.helloIftekhar.springJwt.Utils.Responses.Response;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -75,7 +76,7 @@ public class AuthenticationService {
 
     }
 
-    public ResponseEntity<AuthenticationResponse> authenticate(User request) {
+    public ResponseEntity<LoginResponse> authenticate(User request) {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
             User user = repository.findByUsername(request.getUsername()).orElseThrow(() -> new RuntimeException("User not found"));
@@ -85,9 +86,9 @@ public class AuthenticationService {
             revokeAllTokenByUser(user);
             saveUserToken(accessToken, refreshToken, user);
 
-            return ResponseEntity.ok(new AuthenticationResponse(accessToken, refreshToken, "User login was successful"));
+            return ResponseEntity.ok(new LoginResponse("Login successfully",accessToken, user));
         } catch (BadCredentialsException e) {
-            return ResponseEntity.badRequest().body(new AuthenticationResponse(null, null, "Invalid username or password"));
+            return ResponseEntity.badRequest().body(new LoginResponse("Invalid username or password",null, null));
         }
     }
 
