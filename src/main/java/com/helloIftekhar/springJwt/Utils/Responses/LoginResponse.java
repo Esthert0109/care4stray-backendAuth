@@ -6,7 +6,7 @@ public class LoginResponse<T> {
     @JsonProperty("message")
     private String message;
 
-    @JsonProperty("token")
+    @JsonProperty("access_token")
     private String token;
 
     @JsonProperty("data")

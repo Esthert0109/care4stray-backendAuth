@@ -16,7 +16,7 @@ public class UserController {
     @Autowired
     private AuthenticationService authService;
 
-    @GetMapping("/user")
+    @PostMapping("/user")
     public ResponseEntity<Response<UserDTO>> getUserInfo (@RequestBody User request) {
         if(request.getUsername() == null ) {
             Response badResponse = new Response<>("unsuccess", null);
