@@ -86,7 +86,9 @@ public class AuthenticationService {
             revokeAllTokenByUser(user);
             saveUserToken(accessToken, refreshToken, user);
 
-            return ResponseEntity.ok(new LoginResponse("Login successfully",accessToken, user));
+            UserDTO userLogin = new UserDTO(user);
+
+            return ResponseEntity.ok(new LoginResponse("Login successfully",accessToken, userLogin));
         } catch (BadCredentialsException e) {
             return ResponseEntity.badRequest().body(new LoginResponse("Invalid username or password",null, null));
         }
