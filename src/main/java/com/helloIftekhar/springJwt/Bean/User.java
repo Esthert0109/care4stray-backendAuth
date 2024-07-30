@@ -43,7 +43,7 @@ public class User implements UserDetails {
     @Column(name = "role", nullable = false)
     private Role role;
 
-    @Column(name = "user_avatar")
+    @Column(name = "user_avatar", nullable = false)
     private String userAvatar;
 
     @Column(name = "phone_number")

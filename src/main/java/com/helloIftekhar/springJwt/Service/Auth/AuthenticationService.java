@@ -58,6 +58,7 @@ public class AuthenticationService {
             user.setGender(request.getGender());
             user.setUserStatus(UserStatus.ACTIVE);
             user.setRole(request.getRole());
+            user.setUserAvatar(request.getUserAvatar());
 
             user = repository.save(user);
 
