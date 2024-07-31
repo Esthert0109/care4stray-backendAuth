@@ -37,4 +37,13 @@ public class UserController {
         return ResponseEntity.ok(authService.updateUserInfo(header,request));
     }
 
+    @GetMapping("/check/{username}")
+    public ResponseEntity<Response<Boolean>> checkUsername(@PathVariable String username) {
+        if(username == null) {
+            return ResponseEntity.badRequest().body(new Response<>("unsuccess", null));
+        }
+        return ResponseEntity.ok(authService.checkUserDetails(username));
+    }
+
+
 }

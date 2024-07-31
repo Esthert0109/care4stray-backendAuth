@@ -116,10 +116,12 @@ public class AuthenticationService {
         if (userToken == null) {
             return new Response<>("unsuccess", null);
         }
-        repository.save(user);
         User updatedUser = repository.findByUsername(user.getUsername()).orElseThrow(() -> new RuntimeException("User not found"));
+        user.setPassword(updatedUser.getPassword());
+        repository.save(user);
 
-        UserDTO updatedDto = new UserDTO(updatedUser);
+
+        UserDTO updatedDto = new UserDTO(user);
 
         return new Response<>("success", updatedDto);
 
@@ -136,6 +138,18 @@ public class AuthenticationService {
 
             return new Response<UserDTO>("success", updatedDto);
         } catch (RuntimeException e) {
+            return new Response<>("unsuccess", null);
+        }
+    }
+
+    public Response<Boolean> checkUserDetails(String username){
+        try{
+            User user = repository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
+            if(user.getId()==null|| user.getFirstName()==null||user.getLastName()==null||user.getUsername()==null || user.getPassword()==null || user.getRole()==null||user.getUserAvatar()==null ||user.getPhoneNumber()==0 || user.getGender() == null||user.getDateOfBirth()==null || user.getPostal()==null || user.getAddress()==null || user.getCity()==null ||user.getOccupation()==null){
+                return new Response<>("success", false);
+            }
+            return new Response<>("success", true);
+        }catch (RuntimeException e){
             return new Response<>("unsuccess", null);
         }
     }
