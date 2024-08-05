@@ -24,12 +24,13 @@ public class UserDTO {
     private String password;
     private Role role;
     private String userAvatar;
-    private int phoneNumber;
+    private String phoneNumber;
     private Gender gender;
     private LocalDate dateOfBirth;
     private String postal;
     private String address;
     private String city;
+    private String state;
     private Occupation occupation;
 
     public UserDTO() {
@@ -51,5 +52,6 @@ public class UserDTO {
         this.occupation = user.getOccupation();
         this.userStatus = user.getUserStatus();
         this.userAvatar = user.getUserAvatar();
+        this.state = user.getState();
     }
 }

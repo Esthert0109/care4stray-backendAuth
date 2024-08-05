@@ -6,6 +6,9 @@ import com.helloIftekhar.springJwt.Utils.Enum.Occupation;
 import com.helloIftekhar.springJwt.Utils.Enum.Role;
 import com.helloIftekhar.springJwt.Utils.Enum.UserStatus;
 import jakarta.persistence.*;
+import org.hibernate.annotations.SQLInsert;
+import org.hibernate.annotations.SQLInserts;
+import org.hibernate.annotations.processing.SQL;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,6 +16,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
+
+//@SQLInsert(sql = "INSERT INTO user (dateOfBirth, id, address, city, email, first_name, last_name, password, phone_number, postal, user_avatar, gender, occupation, role, status)\n" +
+//        "VALUES\n" +
+//        "    ('1999-09-09', 1, 'anyPlace', 'anyCity', 'admin@gmail.com', 'Au', 'admin', ''),\n" +
+//        "    ('ACTIVE', 'aU', 'User', 'user@gmail.com', 'user123', 'USER', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTFc0kLj4UisX9AQSUzDXukFV56Y73E5sRK8g&s', '012-7485961', 'FEMALE', '1985-05-15', '67890', '456 Oak Avenue', 'Othertown', 'STUDENT');\n")
 
 @Entity
 @Table(name = "user")
@@ -47,7 +55,7 @@ public class User implements UserDetails {
     private String userAvatar;
 
     @Column(name = "phone_number")
-    private int phoneNumber;
+    private String phoneNumber;
 
     @Enumerated(value = EnumType.STRING)
     @Column(name = "gender", nullable = false)
@@ -64,6 +72,9 @@ public class User implements UserDetails {
 
     @Column(name = "city")
     private String city;
+
+    @Column(name = "state")
+    private String state;
 
     @Enumerated(value = EnumType.STRING)
     @Column(name = "occupation")
@@ -88,7 +99,7 @@ public class User implements UserDetails {
         this.city = user.getCity();
         this.occupation = user.getOccupation();
         this.userStatus = user.getUserStatus();
-        this.userAvatar = user.getUserAvatar();
+        this.state = user.getState();
     }
 
 
@@ -191,11 +202,11 @@ public class User implements UserDetails {
         this.userStatus = userStatus;
     }
 
-    public int getPhoneNumber() {
+    public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(int phoneNumber) {
+    public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
@@ -245,5 +256,13 @@ public class User implements UserDetails {
 
     public void setOccupation(Occupation occupation) {
         this.occupation = occupation;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
     }
 }

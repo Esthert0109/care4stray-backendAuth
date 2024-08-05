@@ -118,6 +118,7 @@ public class AuthenticationService {
         }
         User updatedUser = repository.findByUsername(user.getUsername()).orElseThrow(() -> new RuntimeException("User not found"));
         user.setPassword(updatedUser.getPassword());
+        user.setUserStatus(updatedUser.getUserStatus());
         repository.save(user);
 
 
@@ -145,7 +146,7 @@ public class AuthenticationService {
     public Response<Boolean> checkUserDetails(String username){
         try{
             User user = repository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
-            if(user.getId()==null|| user.getFirstName()==null||user.getLastName()==null||user.getUsername()==null || user.getPassword()==null || user.getRole()==null||user.getUserAvatar()==null ||user.getPhoneNumber()==0 || user.getGender() == null||user.getDateOfBirth()==null || user.getPostal()==null || user.getAddress()==null || user.getCity()==null ||user.getOccupation()==null){
+            if(user.getId()==null|| user.getFirstName()==null||user.getLastName()==null||user.getUsername()==null || user.getPassword()==null || user.getRole()==null||user.getUserAvatar()==null ||user.getPhoneNumber()==null || user.getGender() == null||user.getDateOfBirth()==null || user.getPostal()==null || user.getAddress()==null || user.getCity()==null ||user.getOccupation()==null){
                 return new Response<>("success", false);
             }
             return new Response<>("success", true);
