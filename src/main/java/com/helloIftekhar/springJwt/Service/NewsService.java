@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class NewsService {
@@ -55,5 +57,12 @@ public class NewsService {
         } catch (Exception e) {
             return new Response<>("unsuccess", null);
         }
+    }
+
+    public List<NewsDTO> getAllNews() {
+        List<News> newsList = newsRepository.findAll();
+        return newsList.stream()
+                .map(NewsDTO::new)
+                .collect(Collectors.toList());
     }
 }
