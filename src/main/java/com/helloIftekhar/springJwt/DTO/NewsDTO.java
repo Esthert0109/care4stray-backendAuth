@@ -5,6 +5,8 @@ import com.helloIftekhar.springJwt.Utils.Enum.NewsStatus;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collector;
 
 
 @Data
@@ -17,6 +19,7 @@ public class NewsDTO {
     private NewsStatus status;
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
+    private String duration;
 
     public NewsDTO() {
 
@@ -31,5 +34,17 @@ public class NewsDTO {
         this.status = news.getStatus();
         this.createdDate = news.getCreatedDate();
         this.updatedDate = news.getUpdatedDate();
+    }
+
+    public NewsDTO(News news, String duration) {
+        this.id = news.getId();
+        this.title = news.getTitle();
+        this.author = news.getAuthor();
+        this.content = news.getContent();
+        this.pic = news.getPic();
+        this.status = news.getStatus();
+        this.createdDate = news.getCreatedDate();
+        this.updatedDate = news.getUpdatedDate();
+        this.duration = duration;
     }
 }

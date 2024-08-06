@@ -41,6 +41,9 @@ public class News {
     @Column(name = "updated_date", nullable = false)
     private LocalDateTime updatedDate;
 
+    @Column(name = "duration")
+    private String duration;
+
     public News() {
 
     }
@@ -54,6 +57,7 @@ public class News {
         this.status = newsDTO.getStatus();
         this.createdDate = newsDTO.getCreatedDate();
         this.updatedDate = newsDTO.getUpdatedDate();
+        this.duration = newsDTO.getDuration();
     }
 
     @PrePersist
