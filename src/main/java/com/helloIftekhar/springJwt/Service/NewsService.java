@@ -1,9 +1,7 @@
 package com.helloIftekhar.springJwt.Service;
 
 import com.helloIftekhar.springJwt.Bean.News;
-import com.helloIftekhar.springJwt.Bean.User;
 import com.helloIftekhar.springJwt.DTO.NewsDTO;
-import com.helloIftekhar.springJwt.DTO.UserDTO;
 import com.helloIftekhar.springJwt.Repository.NewsRepository;
 import com.helloIftekhar.springJwt.Utils.Enum.NewsStatus;
 import com.helloIftekhar.springJwt.Utils.Responses.Response;
@@ -20,55 +18,6 @@ import java.util.stream.Collectors;
 public class NewsService {
     @Autowired
     NewsRepository newsRepository;
-
-    public Response<NewsDTO> createNews(News request) {
-        try {
-            News news = new News();
-            news.setTitle(request.getTitle());
-            news.setContent(request.getContent());
-            news.setAuthor(request.getAuthor());
-            news.setPic(request.getPic());
-            news.setStatus(NewsStatus.ACTIVE);
-            news.setCreatedDate(LocalDateTime.now());
-            news.setUpdatedDate(news.getCreatedDate());
-
-            news = newsRepository.save(news);
-
-            NewsDTO createdNews = new NewsDTO(news);
-
-            return new Response<>("success", createdNews);
-        } catch (Exception e) {
-            return new Response<>("unsuccess", null);
-        }
-    }
-
-
-    public Response<NewsDTO> updateNews(News request) {
-        try {
-
-            News updatedNews = newsRepository.findById(request.getId()).orElseThrow(() -> new RuntimeException("no news found"));
-            updatedNews.setTitle(request.getTitle());
-            updatedNews.setContent(request.getContent());
-            updatedNews.setAuthor(request.getAuthor());
-            updatedNews.setPic(request.getPic());
-            updatedNews.setStatus(request.getStatus());
-            updatedNews.setUpdatedDate(LocalDateTime.now());
-            newsRepository.save(updatedNews);
-
-            NewsDTO newsDTO = new NewsDTO(updatedNews);
-
-            return new Response<>("success", newsDTO);
-        } catch (Exception e) {
-            return new Response<>("unsuccess", null);
-        }
-    }
-
-    public List<NewsDTO> getAllNews() {
-        List<News> newsList = newsRepository.findAllByStatusOrderByUpdatedDateDesc(NewsStatus.ACTIVE);
-        return newsList.stream()
-                .map(news -> new NewsDTO(news, formatDuration(news.getCreatedDate())))
-                .collect(Collectors.toList());
-    }
 
     public static String formatDuration(LocalDateTime inputDate) {
         try {
@@ -100,9 +49,62 @@ public class NewsService {
         }
     }
 
+    public Response<NewsDTO> createNews(News request) {
+        try {
+            News news = new News();
+            news.setTitle(request.getTitle());
+            news.setContent(request.getContent());
+            news.setAuthor(request.getAuthor());
+            news.setPic(request.getPic());
+            news.setStatus(NewsStatus.ACTIVE);
+            news.setCreatedDate(LocalDateTime.now());
+            news.setUpdatedDate(news.getCreatedDate());
+
+            news = newsRepository.save(news);
+
+            NewsDTO createdNews = new NewsDTO(news);
+
+            return new Response<>("success", createdNews);
+        } catch (Exception e) {
+            return new Response<>("unsuccess", null);
+        }
+    }
+
+    public Response<NewsDTO> updateNews(News request) {
+        try {
+
+            News updatedNews = newsRepository.findById(request.getId()).orElseThrow(() -> new RuntimeException("no news found"));
+            updatedNews.setTitle(request.getTitle());
+            updatedNews.setContent(request.getContent());
+            updatedNews.setAuthor(request.getAuthor());
+            updatedNews.setPic(request.getPic());
+            updatedNews.setStatus(request.getStatus());
+            updatedNews.setUpdatedDate(LocalDateTime.now());
+            newsRepository.save(updatedNews);
+
+            NewsDTO newsDTO = new NewsDTO(updatedNews);
+
+            return new Response<>("success", newsDTO);
+        } catch (Exception e) {
+            return new Response<>("unsuccess", null);
+        }
+    }
+
+    public List<NewsDTO> getAllNewsByStatus() {
+        List<News> newsList = newsRepository.findAllByStatusOrderByUpdatedDateDesc(NewsStatus.ACTIVE);
+        return newsList.stream()
+                .map(news -> new NewsDTO(news, formatDuration(news.getUpdatedDate())))
+                .collect(Collectors.toList());
+    }
+
+    public List<NewsDTO> getAllNewsOrderByUpdatedDate() {
+        List<News> newsList = newsRepository.findAllByOrderByUpdatedDateDesc();
+        return newsList.stream().map(news -> new NewsDTO(news, formatDuration(news.getUpdatedDate()))).collect(Collectors.toList());
+    }
+
     public Response<NewsDTO> getNewsDetails(Long id) {
         News news = null;
-        try{
+        try {
             news = newsRepository.findById(id).orElseThrow(() -> new RuntimeException("News not found"));
         } catch (RuntimeException e) {
             return new Response<>("unsuccess", null);

@@ -25,7 +25,7 @@ public class NewsController {
     @GetMapping("/lists")
     public ResponseEntity<Response<List<NewsDTO>>> getAllNews() {
         try {
-            List<NewsDTO> newsList = newsService.getAllNews();
+            List<NewsDTO> newsList = newsService.getAllNewsByStatus();
             return ResponseEntity.ok(new Response<>("success", newsList));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
