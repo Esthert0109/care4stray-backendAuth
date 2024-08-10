@@ -47,7 +47,7 @@ public class AdminController {
         return ResponseEntity.ok(authService.updateUserStatus(id, userStatus));
     }
 
-    @GetMapping("/users/all")
+    @GetMapping("/user/all")
     public ResponseEntity<Response<List<UserDTO>>> getAllUsers() {
         try {
             List<UserDTO> userList = authService.getAllUserOrderByFirstName();
