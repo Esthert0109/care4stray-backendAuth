@@ -64,7 +64,7 @@ public class NewsService {
     }
 
     public List<NewsDTO> getAllNews() {
-        List<News> newsList = newsRepository.findAll();
+        List<News> newsList = newsRepository.findAllByStatusOrderByUpdatedDateDesc(NewsStatus.ACTIVE);
         return newsList.stream()
                 .map(news -> new NewsDTO(news, formatDuration(news.getCreatedDate())))
                 .collect(Collectors.toList());

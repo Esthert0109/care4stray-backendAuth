@@ -6,6 +6,7 @@ import com.helloIftekhar.springJwt.DTO.NewsDTO;
 import com.helloIftekhar.springJwt.DTO.UserDTO;
 import com.helloIftekhar.springJwt.Service.Auth.AuthenticationService;
 import com.helloIftekhar.springJwt.Service.NewsService;
+import com.helloIftekhar.springJwt.Utils.Enum.NewsStatus;
 import com.helloIftekhar.springJwt.Utils.Enum.UserStatus;
 import com.helloIftekhar.springJwt.Utils.Responses.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-public class DemoController {
+public class AdminController {
 
     @Autowired
     AuthenticationService authService;
@@ -58,5 +59,16 @@ public class DemoController {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(newsService.updateNews(request));
+    }
+
+    @PutMapping("/admin_only/news/status/{id}")
+    public ResponseEntity<Response<NewsDTO>> updateNewsStatus(@RequestBody Map<String, String> request, @PathVariable Long id){
+        String status = request.get("newsStatus");
+        if(status == null){
+            return ResponseEntity.badRequest().build();
+        }
+        NewsStatus newsStatus = NewsStatus.valueOf(status.toUpperCase());
+        return ResponseEntity.ok(authService.updateNewsStatus(id, newsStatus));
+
     }
 }

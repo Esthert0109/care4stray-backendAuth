@@ -1,11 +1,15 @@
 package com.helloIftekhar.springJwt.Service.Auth;
 
 
+import com.helloIftekhar.springJwt.Bean.News;
 import com.helloIftekhar.springJwt.Bean.Token;
 import com.helloIftekhar.springJwt.Bean.User;
+import com.helloIftekhar.springJwt.DTO.NewsDTO;
 import com.helloIftekhar.springJwt.DTO.UserDTO;
+import com.helloIftekhar.springJwt.Repository.NewsRepository;
 import com.helloIftekhar.springJwt.Repository.TokenRepository;
 import com.helloIftekhar.springJwt.Repository.UserRepository;
+import com.helloIftekhar.springJwt.Utils.Enum.NewsStatus;
 import com.helloIftekhar.springJwt.Utils.Enum.UserStatus;
 import com.helloIftekhar.springJwt.Utils.Responses.AuthenticationResponse;
 import com.helloIftekhar.springJwt.Utils.Responses.LoginResponse;
@@ -30,19 +34,21 @@ public class AuthenticationService {
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
-
     private final TokenRepository tokenRepository;
-
     private final AuthenticationManager authenticationManager;
 
-    public AuthenticationService(UserRepository repository, PasswordEncoder passwordEncoder, JwtService jwtService, TokenRepository tokenRepository, AuthenticationManager authenticationManager) {
+    private final NewsRepository newsRepo;
+
+    public AuthenticationService(UserRepository repository, PasswordEncoder passwordEncoder, JwtService jwtService, TokenRepository tokenRepository, AuthenticationManager authenticationManager, NewsRepository newsRepo) {
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.tokenRepository = tokenRepository;
         this.authenticationManager = authenticationManager;
+        this.newsRepo = newsRepo;
     }
 
+    /******************** User Service**************************************/
     public ResponseEntity<AuthenticationResponse> register(User request) {
 
         // check if user already exist. if exist than authenticate the user
@@ -215,6 +221,22 @@ public class AuthenticationService {
             return header.substring(7);
         }
         throw new RuntimeException("JWT Token is missing");
+    }
+
+    /****************************** News Service ********************************/
+    @Transactional
+    public Response<NewsDTO> updateNewsStatus(Long id, NewsStatus status) {
+        try{
+            News selectedNews = newsRepo.findById(id).orElseThrow(()-> new RuntimeException("News not found"));
+            selectedNews.setStatus(status);
+            newsRepo.save(selectedNews);
+
+            NewsDTO updatedNews = new NewsDTO(selectedNews);
+
+            return new Response<NewsDTO>("success", updatedNews);
+        }catch (RuntimeException e){
+            return new Response<>("unsuccess", null);
+        }
     }
 
 }
