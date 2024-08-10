@@ -1,9 +1,11 @@
 package com.helloIftekhar.springJwt.Controller;
 
 import com.helloIftekhar.springJwt.Bean.News;
+import com.helloIftekhar.springJwt.DTO.DonationDTO;
 import com.helloIftekhar.springJwt.DTO.NewsDTO;
 import com.helloIftekhar.springJwt.DTO.UserDTO;
 import com.helloIftekhar.springJwt.Service.Auth.AuthenticationService;
+import com.helloIftekhar.springJwt.Service.DonationService;
 import com.helloIftekhar.springJwt.Service.NewsService;
 import com.helloIftekhar.springJwt.Utils.Enum.NewsStatus;
 import com.helloIftekhar.springJwt.Utils.Enum.UserStatus;
@@ -25,6 +27,9 @@ public class AdminController {
 
     @Autowired
     NewsService newsService;
+
+    @Autowired
+    DonationService donationService;
 
     @GetMapping("/demo")
     public ResponseEntity<String> demo() {
@@ -89,6 +94,15 @@ public class AdminController {
             List<NewsDTO> newsList = newsService.getAllNewsOrderByUpdatedDate();
             return ResponseEntity.ok(new Response<>("success", newsList));
         } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new Response<>("unsuccess", null));
+        }
+    }
+
+    @GetMapping("/donation/all")
+    public ResponseEntity<Response<List<DonationDTO>>> getAllDonation() {
+        try {
+            return ResponseEntity.ok(donationService.getAllDonationList());
+        }catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new Response<>("unsuccess", null));
         }
     }

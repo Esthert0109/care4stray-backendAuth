@@ -1,5 +1,5 @@
 package com.helloIftekhar.springJwt.Utils.Enum;
 
 public enum DonationStatus {
-    PENDING, COMPLETE
+    PENDING, SUCCESS, UNSUCCESS
 }

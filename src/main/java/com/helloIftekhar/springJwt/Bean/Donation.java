@@ -17,22 +17,25 @@ public class Donation {
     @Column(name = "donation_id")
     private Long id;
 
-    @Column(name = "created_date", nullable = false)
-    private LocalDateTime createdDate;
-
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = true)
     private User user;
 
     @Column(name = "amount", nullable = false)
     private Double amount;
 
-    @Column(name = "isAnonymously", nullable = false)
-    private String isAnonymously;
+    @Column(name = "is_anonymously", nullable = false)
+    private Boolean isAnonymously;
 
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private DonationStatus status;
+
+    @Column(name = "created_date", nullable = false)
+    private LocalDateTime createdDate;
+
+    @Column(name = "updated_date", nullable = false)
+    private LocalDateTime updatedDate;
 
     public Donation() {
     }
@@ -40,6 +43,7 @@ public class Donation {
     public Donation(DonationDTO donationDTO, User user) {
         this.id = donationDTO.getId();
         this.createdDate = donationDTO.getCreatedDate();
+        this.updatedDate = donationDTO.getUpdatedDate();
         this.user = user;
         this.amount = donationDTO.getAmount();
         this.isAnonymously = donationDTO.getIsAnonymously();
