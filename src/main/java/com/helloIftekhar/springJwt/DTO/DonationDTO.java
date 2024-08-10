@@ -24,7 +24,11 @@ public class DonationDTO {
         this.id = donation.getId();
         this.createdDate = donation.getCreatedDate();
         this.updatedDate = donation.getUpdatedDate();
-        this.user = new UserDTO(donation.getUser());
+        if(donation.getUser() != null) {
+            this.user = new UserDTO(donation.getUser());
+        }else{
+            this.user = null;
+        }
         this.amount = donation.getAmount();
         this.isAnonymously = donation.getIsAnonymously();
         this.status = donation.getStatus();

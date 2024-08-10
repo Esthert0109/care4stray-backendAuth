@@ -48,8 +48,13 @@ public class DonationService {
             Donation createdDonation = new Donation();
             createdDonation.setIsAnonymously(donation.getIsAnonymously());
             createdDonation.setAmount(donation.getAmount());
-            createdDonation.setUser(new User(donation.getUser()));
+//            createdDonation.setUser(new User(donation.getUser()));
             createdDonation.setStatus(DonationStatus.PENDING);
+            if(donation.getUser() == null){
+                createdDonation.setUser(null);
+            }else{
+                createdDonation.setUser(new User(donation.getUser()));
+            }
             createdDonation.setCreatedDate(LocalDateTime.now());
             createdDonation.setUpdatedDate(createdDonation.getCreatedDate());
 
