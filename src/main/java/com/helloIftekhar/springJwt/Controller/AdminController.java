@@ -47,6 +47,16 @@ public class AdminController {
         return ResponseEntity.ok(authService.updateUserStatus(id, userStatus));
     }
 
+    @GetMapping("/users/all")
+    public ResponseEntity<Response<List<UserDTO>>> getAllUsers() {
+        try {
+            List<UserDTO> userList = authService.getAllUserOrderByFirstName();
+            return ResponseEntity.ok(new Response<List<UserDTO>>("success", userList));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new Response<>("unsuccess", null));
+        }
+    }
+
     @PostMapping("/news")
     public ResponseEntity<Response<NewsDTO>> createNews(@RequestBody News request) {
         if (request == null) {

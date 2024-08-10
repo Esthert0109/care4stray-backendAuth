@@ -27,6 +27,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AuthenticationService {
@@ -159,6 +160,14 @@ public class AuthenticationService {
         }catch (RuntimeException e){
             return new Response<>("unsuccess", null);
         }
+    }
+
+    public List<UserDTO> getAllUserOrderByFirstName() {
+        List<User> userList = repository.findAllByOrderByFirstNameAsc();
+        return userList.stream()
+                .filter(user -> !user.getUserStatus().equals(UserStatus.DEACTIVATED))
+                .map(user -> new UserDTO(user))
+                .collect(Collectors.toList());
     }
 
     private void revokeAllTokenByUser(User user) {

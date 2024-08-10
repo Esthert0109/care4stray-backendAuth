@@ -99,7 +99,10 @@ public class NewsService {
 
     public List<NewsDTO> getAllNewsOrderByUpdatedDate() {
         List<News> newsList = newsRepository.findAllByOrderByUpdatedDateDesc();
-        return newsList.stream().map(news -> new NewsDTO(news, formatDuration(news.getUpdatedDate()))).collect(Collectors.toList());
+        return newsList.stream()
+                .filter(news -> !news.getStatus().equals(NewsStatus.DEACTIVATED))
+                .map(news -> new NewsDTO(news, formatDuration(news.getUpdatedDate())))
+                .collect(Collectors.toList());
     }
 
     public Response<NewsDTO> getNewsDetails(Long id) {
