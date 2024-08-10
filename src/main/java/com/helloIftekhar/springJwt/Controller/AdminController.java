@@ -3,11 +3,14 @@ package com.helloIftekhar.springJwt.Controller;
 import com.helloIftekhar.springJwt.Bean.News;
 import com.helloIftekhar.springJwt.DTO.DonationDTO;
 import com.helloIftekhar.springJwt.DTO.NewsDTO;
+import com.helloIftekhar.springJwt.DTO.StrayDTO;
 import com.helloIftekhar.springJwt.DTO.UserDTO;
 import com.helloIftekhar.springJwt.Service.Auth.AuthenticationService;
 import com.helloIftekhar.springJwt.Service.DonationService;
 import com.helloIftekhar.springJwt.Service.NewsService;
+import com.helloIftekhar.springJwt.Service.StrayService;
 import com.helloIftekhar.springJwt.Utils.Enum.NewsStatus;
+import com.helloIftekhar.springJwt.Utils.Enum.StrayStatus;
 import com.helloIftekhar.springJwt.Utils.Enum.UserStatus;
 import com.helloIftekhar.springJwt.Utils.Responses.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +33,8 @@ public class AdminController {
 
     @Autowired
     DonationService donationService;
+    @Autowired
+    private StrayService strayService;
 
     @GetMapping("/demo")
     public ResponseEntity<String> demo() {
@@ -105,5 +110,32 @@ public class AdminController {
         }catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new Response<>("unsuccess", null));
         }
+    }
+
+    @PostMapping("/adoption/create_stray")
+    public ResponseEntity<Response<StrayDTO>> createStray(@RequestBody StrayDTO request) {
+        if(request == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(strayService.createStray(request));
+    }
+
+    @GetMapping("/adoption/stray/all")
+    public ResponseEntity<Response<List<StrayDTO>>> getAllStray() {
+        try{
+            return ResponseEntity.ok(strayService.getAllStrays());
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new Response<>("unsuccess", null));
+        }
+    }
+
+    @PutMapping("/adoption/stray/updateStatus/{id}")
+    public ResponseEntity<Response<StrayDTO>> updateStrayStatus(@RequestBody Map<String, String> request, @PathVariable Long id) {
+        String status = request.get("strayStatus");
+        if (status == null || id == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        StrayStatus strayStatus = StrayStatus.valueOf(status.toUpperCase());
+        return ResponseEntity.ok(strayService.updateStrayStatus(id, strayStatus));
     }
 }
