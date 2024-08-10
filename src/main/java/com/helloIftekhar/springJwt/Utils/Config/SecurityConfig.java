@@ -1,8 +1,8 @@
 package com.helloIftekhar.springJwt.Utils.Config;
 
 
-import com.helloIftekhar.springJwt.Utils.Filter.JwtAuthenticationFilter;
 import com.helloIftekhar.springJwt.Service.UserDetailsServiceImp;
+import com.helloIftekhar.springJwt.Utils.Filter.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -29,9 +29,7 @@ public class SecurityConfig {
 
     private final CustomLogoutHandler logoutHandler;
 
-    public SecurityConfig(UserDetailsServiceImp userDetailsServiceImp,
-                          JwtAuthenticationFilter jwtAuthenticationFilter,
-                          CustomLogoutHandler logoutHandler) {
+    public SecurityConfig(UserDetailsServiceImp userDetailsServiceImp, JwtAuthenticationFilter jwtAuthenticationFilter, CustomLogoutHandler logoutHandler) {
         this.userDetailsServiceImp = userDetailsServiceImp;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.logoutHandler = logoutHandler;
@@ -40,29 +38,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        return http
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(
-                        req->req.requestMatchers("/care4stray/auth/**", "/care4stray/news/**", "/care4stray/donation/create", "/care4stray/donation/updateStatus/**", "/care4stray/donation/donationList", "/care4stray/adoption/getStray")
-                                .permitAll()
-                                .requestMatchers("/admin_only/**").hasAuthority("ADMIN")
-                                .anyRequest()
-                                .authenticated()
-                ).userDetailsService(userDetailsServiceImp)
-                .sessionManagement(session->session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling(
-                        e->e.accessDeniedHandler(
-                                        (request, response, accessDeniedException)->response.setStatus(403)
-                                )
-                                .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
-                .logout(l->l
-                        .logoutUrl("/logout")
-                        .addLogoutHandler(logoutHandler)
-                        .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext()
-                        ))
-                .build();
+        return http.csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(req -> req.requestMatchers("/care4stray/auth/**", "/care4stray/news/**", "/care4stray/donation/create", "/care4stray/donation/updateStatus/**", "/care4stray/donation/donationList", "/care4stray/adoption/getStray", "/care4stray/adoption/getStray/**").permitAll().requestMatchers("/admin_only/**").hasAuthority("ADMIN").anyRequest().authenticated()).userDetailsService(userDetailsServiceImp).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class).exceptionHandling(e -> e.accessDeniedHandler((request, response, accessDeniedException) -> response.setStatus(403)).authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))).logout(l -> l.logoutUrl("/logout").addLogoutHandler(logoutHandler).logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())).build();
 
     }
 

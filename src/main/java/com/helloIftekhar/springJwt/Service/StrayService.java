@@ -70,9 +70,18 @@ public class StrayService {
     }
 
     public Response<List<StrayDTO>> getAllStrayList() {
-        try{
+        try {
             List<Stray> strays = strayRepository.findAllStray();
             return new Response<>("success", strays.stream().map(stray -> new StrayDTO(stray)).toList());
+        } catch (Exception e) {
+            return new Response<>("unsuccess", null);
+        }
+    }
+
+    public Response<StrayDTO> getStrayDetailsById(Long id) {
+        try{
+            Stray stray = strayRepository.findById(id).orElseThrow(() -> new RuntimeException("Stray not found"));
+            return new Response<>("success", new StrayDTO(stray));
         }catch (Exception e){
             return new Response<>("unsuccess", null);
         }
