@@ -112,6 +112,17 @@ public class AuthenticationService {
         return new Response<>("success", userDetails);
     }
 
+    public Response<UserDTO> getUserInfoDetailsByID(Integer UserID) {
+        User user = null;
+        try {
+            user = repository.findById(UserID).orElseThrow(() -> new RuntimeException("User not found"));
+        } catch (RuntimeException e) {
+            return new Response<>("unsuccess", null);
+        }
+        UserDTO userDetails = new UserDTO(user);
+        return new Response<>("success", userDetails);
+    }
+
     public Response<UserDTO> updateUserInfo(HttpServletRequest request, User user) {
         String token = extractTokenFromHeader(request);
 

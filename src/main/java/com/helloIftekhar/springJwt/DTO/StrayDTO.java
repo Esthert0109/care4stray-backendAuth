@@ -2,6 +2,7 @@ package com.helloIftekhar.springJwt.DTO;
 
 import com.helloIftekhar.springJwt.Bean.Stray;
 import com.helloIftekhar.springJwt.Bean.User;
+import com.helloIftekhar.springJwt.Utils.Enum.Gender;
 import com.helloIftekhar.springJwt.Utils.Enum.StrayStatus;
 import lombok.Data;
 
@@ -17,6 +18,8 @@ public class StrayDTO {
     private String name;
 
     private int age;
+
+    private Gender gender;
 
     private List<String> behaviour;
 
@@ -41,6 +44,7 @@ public class StrayDTO {
         this.user = new UserDTO(stray.getUser());
         this.name = stray.getName();
         this.age = stray.getAge();
+        this.gender = stray.getGender();
         this.behaviour = stray.getBehaviour();
         this.mainPicture = stray.getMainPicture();
         this.pictureUrl = stray.getPictureUrl();

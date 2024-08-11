@@ -1,6 +1,7 @@
 package com.helloIftekhar.springJwt.Controller;
 
 import com.helloIftekhar.springJwt.Bean.News;
+import com.helloIftekhar.springJwt.Bean.User;
 import com.helloIftekhar.springJwt.DTO.DonationDTO;
 import com.helloIftekhar.springJwt.DTO.NewsDTO;
 import com.helloIftekhar.springJwt.DTO.StrayDTO;
@@ -65,6 +66,16 @@ public class AdminController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new Response<>("unsuccess", null));
         }
+    }
+    @PostMapping("/userid")
+    public ResponseEntity<Response<UserDTO>> getUserInfoByUserID (@RequestBody User request) {
+        if(request.getId() == null ) {
+            Response badResponse = new Response<>("unsuccess", null);
+            return ResponseEntity.badRequest().body(badResponse);
+        }
+
+        Integer UserID = request.getId();
+        return ResponseEntity.ok(authService.getUserInfoDetailsByID(UserID));
     }
 
     @PostMapping("/news")

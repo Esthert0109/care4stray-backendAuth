@@ -27,6 +27,7 @@ public class StrayService {
             stray.setUser(new User(strayDTO.getUser()));
             stray.setName(strayDTO.getName());
             stray.setAge(strayDTO.getAge());
+            stray.setGender(strayDTO.getGender());
             stray.setBehaviour(strayDTO.getBehaviour());
             stray.setMainPicture(strayDTO.getMainPicture());
             stray.setPictureUrl(strayDTO.getPictureUrl());

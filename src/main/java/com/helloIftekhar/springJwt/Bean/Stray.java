@@ -1,6 +1,7 @@
 package com.helloIftekhar.springJwt.Bean;
 
 import com.helloIftekhar.springJwt.DTO.StrayDTO;
+import com.helloIftekhar.springJwt.Utils.Enum.Gender;
 import com.helloIftekhar.springJwt.Utils.Enum.StrayStatus;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -26,6 +27,10 @@ public class Stray {
 
     @Column(name = "age")
     private int age;
+
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "gender")
+    private Gender gender;
 
     @ElementCollection
     @CollectionTable(name = "stray_behaviour", joinColumns = @JoinColumn(name = "stray_id"))
@@ -64,6 +69,7 @@ public class Stray {
         this.user = user;
         this.name = strayDTO.getName();
         this.age = strayDTO.getAge();
+        this.gender = strayDTO.getGender();
         this.behaviour = strayDTO.getBehaviour();
         this.mainPicture = strayDTO.getMainPicture();
         this.pictureUrl = strayDTO.getPictureUrl();
