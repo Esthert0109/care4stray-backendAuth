@@ -10,6 +10,7 @@ import com.helloIftekhar.springJwt.Repository.NewsRepository;
 import com.helloIftekhar.springJwt.Repository.TokenRepository;
 import com.helloIftekhar.springJwt.Repository.UserRepository;
 import com.helloIftekhar.springJwt.Utils.Enum.NewsStatus;
+import com.helloIftekhar.springJwt.Utils.Enum.Role;
 import com.helloIftekhar.springJwt.Utils.Enum.UserStatus;
 import com.helloIftekhar.springJwt.Utils.Responses.AuthenticationResponse;
 import com.helloIftekhar.springJwt.Utils.Responses.LoginResponse;
@@ -177,6 +178,7 @@ public class AuthenticationService {
         List<User> userList = repository.findAllByOrderByFirstNameAsc();
         return userList.stream()
                 .filter(user -> !user.getUserStatus().equals(UserStatus.DEACTIVATED))
+                .filter(user -> user.getRole().equals(Role.USER))
                 .map(user -> new UserDTO(user))
                 .collect(Collectors.toList());
     }
