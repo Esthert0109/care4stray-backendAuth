@@ -46,10 +46,10 @@ public class Stray {
     private List<String> pictureUrl;
 
     @Column(name = "is_vaccinated", nullable = false)
-    private boolean isVaccinated;
+    private Boolean isVaccinated;
 
     @Column(name = "is_dewormed", nullable = false)
-    private boolean isDewormed;
+    private Boolean isDewormed;
 
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -73,8 +73,8 @@ public class Stray {
         this.behaviour = strayDTO.getBehaviour();
         this.mainPicture = strayDTO.getMainPicture();
         this.pictureUrl = strayDTO.getPictureUrl();
-        this.isVaccinated = strayDTO.isVaccinated();
-        this.isDewormed = strayDTO.isDewormed();
+        this.isVaccinated = strayDTO.getIsVaccinated();
+        this.isDewormed = strayDTO.getIsDewormed();
         this.status = strayDTO.getStatus();
         this.createdDate = strayDTO.getCreatedDate();
         this.updatedDate = strayDTO.getUpdatedDate();

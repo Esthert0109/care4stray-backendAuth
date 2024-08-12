@@ -1,6 +1,7 @@
 package com.helloIftekhar.springJwt.Controller;
 
 import com.helloIftekhar.springJwt.Bean.News;
+import com.helloIftekhar.springJwt.Bean.Stray;
 import com.helloIftekhar.springJwt.Bean.User;
 import com.helloIftekhar.springJwt.DTO.DonationDTO;
 import com.helloIftekhar.springJwt.DTO.NewsDTO;
@@ -67,6 +68,7 @@ public class AdminController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new Response<>("unsuccess", null));
         }
     }
+
     @PostMapping("/userid")
     public ResponseEntity<Response<UserDTO>> getUserInfoByUserID (@RequestBody User request) {
         if(request.getId() == null ) {
@@ -148,5 +150,13 @@ public class AdminController {
         }
         StrayStatus strayStatus = StrayStatus.valueOf(status.toUpperCase());
         return ResponseEntity.ok(strayService.updateStrayStatus(id, strayStatus));
+    }
+
+    @PatchMapping("/adoption/stray/update")
+    public ResponseEntity<Response<StrayDTO>> updateStray(@RequestBody StrayDTO request) {
+        if (request == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(strayService.updateStray(request));
     }
 }

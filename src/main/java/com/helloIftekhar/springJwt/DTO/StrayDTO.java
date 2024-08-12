@@ -27,9 +27,9 @@ public class StrayDTO {
 
     private List<String> pictureUrl;
 
-    private boolean isVaccinated;
+    private Boolean isVaccinated;
 
-    private boolean isDewormed;
+    private Boolean isDewormed;
 
     private StrayStatus status;
 
@@ -48,8 +48,8 @@ public class StrayDTO {
         this.behaviour = stray.getBehaviour();
         this.mainPicture = stray.getMainPicture();
         this.pictureUrl = stray.getPictureUrl();
-        this.isVaccinated = stray.isVaccinated();
-        this.isDewormed = stray.isDewormed();
+        this.isVaccinated = stray.getIsVaccinated();
+        this.isDewormed = stray.getIsDewormed();
         this.status = stray.getStatus();
         this.createdDate = stray.getCreatedDate();
         this.updatedDate = stray.getUpdatedDate();

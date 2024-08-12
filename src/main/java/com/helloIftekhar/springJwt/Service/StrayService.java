@@ -31,8 +31,8 @@ public class StrayService {
             stray.setBehaviour(strayDTO.getBehaviour());
             stray.setMainPicture(strayDTO.getMainPicture());
             stray.setPictureUrl(strayDTO.getPictureUrl());
-            stray.setVaccinated(stray.isVaccinated());
-            stray.setDewormed(stray.isDewormed());
+            stray.setIsVaccinated(stray.getIsVaccinated());
+            stray.setIsDewormed(stray.getIsDewormed());
             stray.setStatus(StrayStatus.AVAILABLE);
             stray.setCreatedDate(LocalDateTime.now());
             stray.setUpdatedDate(stray.getCreatedDate());
@@ -84,6 +84,28 @@ public class StrayService {
             Stray stray = strayRepository.findById(id).orElseThrow(() -> new RuntimeException("Stray not found"));
             return new Response<>("success", new StrayDTO(stray));
         }catch (Exception e){
+            return new Response<>("unsuccess", null);
+        }
+    }
+
+    public Response<StrayDTO> updateStray(StrayDTO request) {
+        try {
+            Stray updateStray = strayRepository.findById(request.getStrayId()).orElseThrow(() -> new RuntimeException("no stray found"));
+            updateStray.setName(request.getName());
+            updateStray.setAge(request.getAge());
+            updateStray.setGender(request.getGender());
+            updateStray.setBehaviour(request.getBehaviour());
+            updateStray.setMainPicture(request.getMainPicture());
+            updateStray.setPictureUrl(request.getPictureUrl());
+            updateStray.setIsVaccinated(request.getIsVaccinated());
+            updateStray.setIsDewormed(request.getIsDewormed());
+            updateStray.setUpdatedDate(LocalDateTime.now());
+            strayRepository.save(updateStray);
+
+            StrayDTO strayDTO = new StrayDTO(updateStray);
+
+            return new Response<>("sucess", strayDTO);
+        } catch (Exception e) {
             return new Response<>("unsuccess", null);
         }
     }
