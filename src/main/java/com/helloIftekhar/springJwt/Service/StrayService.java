@@ -21,6 +21,9 @@ public class StrayService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private PostService postService;
+
     public Response<StrayDTO> createStray(StrayDTO strayDTO) {
         try {
             Stray stray = new Stray();
@@ -31,12 +34,15 @@ public class StrayService {
             stray.setBehaviour(strayDTO.getBehaviour());
             stray.setMainPicture(strayDTO.getMainPicture());
             stray.setPictureUrl(strayDTO.getPictureUrl());
-            stray.setIsVaccinated(stray.getIsVaccinated());
-            stray.setIsDewormed(stray.getIsDewormed());
+            stray.setIsVaccinated(strayDTO.getIsVaccinated());
+            stray.setIsDewormed(strayDTO.getIsDewormed());
             stray.setStatus(StrayStatus.AVAILABLE);
             stray.setCreatedDate(LocalDateTime.now());
             stray.setUpdatedDate(stray.getCreatedDate());
             strayRepository.save(stray);
+
+//            create Post
+            postService.createAdoptionPost(stray);
 
             StrayDTO savedStray = new StrayDTO(stray);
             return new Response<>("success", savedStray);

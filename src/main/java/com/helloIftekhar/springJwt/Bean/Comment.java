@@ -3,7 +3,6 @@ package com.helloIftekhar.springJwt.Bean;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.security.Timestamp;
 import java.time.LocalDateTime;
 
 @Entity
