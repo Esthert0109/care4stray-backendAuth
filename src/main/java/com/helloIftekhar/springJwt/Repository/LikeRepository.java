@@ -10,4 +10,6 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
 
 //    @Query("SELECT EXISTS (SELECT 1 FROM Like )")
     Boolean existsByUserAndPost(User user, Post post);
+
+    Like findByUserAndPost(User user, Post post);
 }

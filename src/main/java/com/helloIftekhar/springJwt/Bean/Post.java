@@ -32,7 +32,7 @@ public class Post {
     private String content;
 
     @ElementCollection
-    @CollectionTable(name = "post_picture", joinColumns = @JoinColumn(name = "post_picture_id"))
+    @CollectionTable(name = "post_picture", joinColumns = @JoinColumn(name = "post_id"))
     @Column(name = "picture")
     private List<String> picture;
 

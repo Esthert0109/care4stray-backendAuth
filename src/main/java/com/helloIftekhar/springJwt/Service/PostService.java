@@ -1,11 +1,10 @@
 package com.helloIftekhar.springJwt.Service;
 
+import com.helloIftekhar.springJwt.Bean.Like;
 import com.helloIftekhar.springJwt.Bean.Post;
 import com.helloIftekhar.springJwt.Bean.Stray;
 import com.helloIftekhar.springJwt.Bean.User;
-import com.helloIftekhar.springJwt.DTO.AdoptionPostDTO;
-import com.helloIftekhar.springJwt.DTO.StrayDTO;
-import com.helloIftekhar.springJwt.DTO.UserDTO;
+import com.helloIftekhar.springJwt.DTO.*;
 import com.helloIftekhar.springJwt.Repository.LikeRepository;
 import com.helloIftekhar.springJwt.Repository.PostRepository;
 import com.helloIftekhar.springJwt.Repository.UserRepository;
@@ -39,11 +38,30 @@ public class PostService {
         postRepository.save(adoptionPost);
     }
 
+    public Response<CreatedPostDTO> createNewPost(CreatePostDTO createPost) {
+        try {
+            Post newPost = new Post();
+            newPost.setUser(new User(createPost.getAuthor()));
+            newPost.setIsAdoption(false);
+            newPost.setContent(createPost.getContent());
+            newPost.setPicture(createPost.getPicture());
+            newPost.setLikeCount(0);
+            newPost.setCommentCount(0);
+            newPost.setCreatedDate(LocalDateTime.now());
+
+            postRepository.save(newPost);
+            CreatedPostDTO createdPostDTO = new CreatedPostDTO(newPost, false);
+            return new Response<>("success", createdPostDTO);
+        } catch (Exception e) {
+            return new Response<>("unsuccess", null);
+        }
+    }
+
     public Response<List<AdoptionPostDTO>> getAdoptedPostList(Integer userId) {
         try {
             List<Post> postList = postRepository.findAllAdoptionPost();
             List<AdoptionPostDTO> adoptionPostDTOList = new ArrayList<>();
-            User user = userRepository.findById(userId).orElseThrow(()-> new RuntimeException("User not found."));
+            User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found."));
 
             for (Post post : postList) {
                 AdoptionPostDTO adoptionPost = new AdoptionPostDTO();
@@ -61,6 +79,68 @@ public class PostService {
 
             return new Response<>("success", adoptionPostDTOList);
         } catch (Exception e) {
+            return new Response<>("unsuccess", null);
+        }
+    }
+
+    public Response<List<CreatedPostDTO>> getCreatedPostList(Integer userId) {
+        try {
+            List<Post> postList = postRepository.findAllCreatedPost();
+            List<CreatedPostDTO> createdPostDTOList = new ArrayList<>();
+            User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found."));
+
+            for (Post post : postList) {
+                CreatedPostDTO createdPostDTO = new CreatedPostDTO();
+                Boolean isLiked = likeRepository.existsByUserAndPost(user, post);
+                createdPostDTO.setPostId(post.getPostId());
+                createdPostDTO.setAuthor(new UserDTO(post.getUser()));
+                createdPostDTO.setContent(post.getContent());
+                createdPostDTO.setPicture(post.getPicture());
+                createdPostDTO.setIsLiked(isLiked);
+                createdPostDTO.setLikeCount(post.getLikeCount());
+                createdPostDTO.setCommentCount(post.getCommentCount());
+                createdPostDTO.setCreatedDate(post.getCreatedDate());
+
+                createdPostDTOList.add(createdPostDTO);
+            }
+
+            return new Response<>("success", createdPostDTOList);
+        } catch (Exception e) {
+            return new Response<>("unsuccess", null);
+        }
+    }
+
+    public Response<LikedDTO> likeOrUnlikedPost(LikeDTO likeDTO) {
+        try{
+            User user = userRepository.findById(likeDTO.getUser().getId()).orElseThrow(() -> new RuntimeException("User not found."));
+            Post post = postRepository.findById(likeDTO.getPost().getPostId()).orElseThrow(() -> new RuntimeException("Post not found."));
+            Boolean isLiked = likeRepository.existsByUserAndPost(user, post);
+            if(isLiked){
+                Like createdLike = likeRepository.findByUserAndPost(user, post);
+                likeRepository.deleteById(createdLike.getId());
+
+                post.setLikeCount(post.getLikeCount() - 1);
+                postRepository.save(post);
+
+                LikedDTO likedDTO = new LikedDTO();
+                likedDTO.setIsLiked(false);
+                return new Response<>("success", likedDTO);
+            }else{
+                Like likePost = new Like();
+                likePost.setUser(user);
+                likePost.setPost(post);
+                likePost.setCreatedDate(LocalDateTime.now());
+                likePost.setUpdatedDate(likePost.getCreatedDate());
+
+                likeRepository.save(likePost);
+
+                post.setLikeCount(post.getLikeCount() + 1);
+                postRepository.save(post);
+
+                LikedDTO likedDTO = new LikedDTO(likePost, true);
+                return new Response<>("success", likedDTO);
+            }
+        }catch(Exception e){
             return new Response<>("unsuccess", null);
         }
     }

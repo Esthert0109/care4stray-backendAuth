@@ -1,5 +1,6 @@
 package com.helloIftekhar.springJwt.Bean;
 
+import com.helloIftekhar.springJwt.DTO.LikeDTO;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -22,9 +23,18 @@ public class Like {
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 
-    @Column(name = "created_time", nullable = false)
-    private LocalDateTime createdTime;
+    @Column(name = "created_date", nullable = false)
+    private LocalDateTime createdDate;
 
-    @Column(name = "updated_time", nullable = false)
-    private LocalDateTime updatedTime;
+    @Column(name = "updated_date", nullable = false)
+    private LocalDateTime updatedDate;
+
+    public Like() {
+    }
+
+    public Like(LikeDTO dto) {
+        this.id = dto.getId();
+        this.user = new User(dto.getUser());
+        this.post = new Post(dto.getPost());
+    }
 }
