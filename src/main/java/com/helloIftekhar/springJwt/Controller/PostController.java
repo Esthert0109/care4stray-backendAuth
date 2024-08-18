@@ -52,4 +52,12 @@ public class PostController {
         }
         return ResponseEntity.ok(postService.likeOrUnlikedPost(request));
     }
+
+    @PostMapping("/comment")
+    public ResponseEntity<Response<CreatedCommentDTO>> createComment(@RequestBody CreateCommentDTO request) {
+        if (request == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(postService.createComment(request));
+    }
 }

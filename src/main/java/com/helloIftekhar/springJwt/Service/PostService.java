@@ -1,10 +1,8 @@
 package com.helloIftekhar.springJwt.Service;
 
-import com.helloIftekhar.springJwt.Bean.Like;
-import com.helloIftekhar.springJwt.Bean.Post;
-import com.helloIftekhar.springJwt.Bean.Stray;
-import com.helloIftekhar.springJwt.Bean.User;
+import com.helloIftekhar.springJwt.Bean.*;
 import com.helloIftekhar.springJwt.DTO.*;
+import com.helloIftekhar.springJwt.Repository.CommentRepository;
 import com.helloIftekhar.springJwt.Repository.LikeRepository;
 import com.helloIftekhar.springJwt.Repository.PostRepository;
 import com.helloIftekhar.springJwt.Repository.UserRepository;
@@ -26,6 +24,9 @@ public class PostService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private CommentRepository commentRepository;
 
     public void createAdoptionPost(Stray stray) {
         Post adoptionPost = new Post();
@@ -145,4 +146,25 @@ public class PostService {
         }
     }
 
+    public Response<CreatedCommentDTO> createComment(CreateCommentDTO commentDTO) {
+        try{
+            User user = userRepository.findById(commentDTO.getUser().getId()).orElseThrow(() -> new RuntimeException("User not found."));
+            Post post = postRepository.findById(commentDTO.getPost().getPostId()).orElseThrow(() -> new RuntimeException("Post not found."));
+            Comment newComment = new Comment();
+            newComment.setUser(user);
+            newComment.setComment(commentDTO.getComment());
+            newComment.setPost(post);
+            newComment.setCreatedTime(LocalDateTime.now());
+
+            commentRepository.save(newComment);
+
+            post.setCommentCount(post.getCommentCount() + 1);
+            postRepository.save(post);
+
+            CreatedCommentDTO createdCommentDTO = new CreatedCommentDTO(newComment);
+            return new Response<>("success", createdCommentDTO);
+        }catch(Exception e){
+            return new Response<>("unsuccess", null);
+        }
+    }
 }
