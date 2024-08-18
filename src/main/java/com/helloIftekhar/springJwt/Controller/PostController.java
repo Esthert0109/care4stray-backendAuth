@@ -5,10 +5,7 @@ import com.helloIftekhar.springJwt.Service.PostService;
 import com.helloIftekhar.springJwt.Utils.Responses.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -36,6 +33,15 @@ public class PostController {
         return ResponseEntity.ok(postService.createNewPost(request));
     }
 
+    @PostMapping("/{postId}")
+    public ResponseEntity<Response<CreatedPostDTO>> getPostDetail(@PathVariable Long postId, @RequestBody Map<String, Integer> request) {
+        if(postId == null || postId == 0 || request == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        Integer userId = request.get("userId");
+        return ResponseEntity.ok(postService.getPostDetail(postId,userId));
+    }
+
     @PostMapping("/create-list")
     public ResponseEntity<Response<List<CreatedPostDTO>>> createdPostList(@RequestBody Map<String, Integer> request) {
         Integer userId = request.get("userId");
@@ -59,5 +65,13 @@ public class PostController {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(postService.createComment(request));
+    }
+
+    @GetMapping("/comment-list/{id}")
+    public ResponseEntity<Response<List<CreatedCommentDTO>>> getCommentList(@PathVariable Long id) {
+        if(id == null || id == 0) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(postService.getCommentListByPostId(id));
     }
 }

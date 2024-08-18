@@ -58,6 +58,20 @@ public class PostService {
         }
     }
 
+    public Response<CreatedPostDTO> getPostDetail(Long postId, Integer userId) {
+        try {
+            Post post = postRepository.findPostByPostId(postId);
+            User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found."));
+            Boolean isLiked = likeRepository.existsByUserAndPost(user, post);
+
+            CreatedPostDTO createdPostDTO = new CreatedPostDTO(post, isLiked);
+
+            return new Response<>("success", createdPostDTO);
+        } catch (Exception e) {
+            return new Response<>("unsuccess", null);
+        }
+    }
+
     public Response<List<AdoptionPostDTO>> getAdoptedPostList(Integer userId) {
         try {
             List<Post> postList = postRepository.findAllAdoptionPost();
@@ -112,11 +126,11 @@ public class PostService {
     }
 
     public Response<LikedDTO> likeOrUnlikedPost(LikeDTO likeDTO) {
-        try{
+        try {
             User user = userRepository.findById(likeDTO.getUser().getId()).orElseThrow(() -> new RuntimeException("User not found."));
             Post post = postRepository.findById(likeDTO.getPost().getPostId()).orElseThrow(() -> new RuntimeException("Post not found."));
             Boolean isLiked = likeRepository.existsByUserAndPost(user, post);
-            if(isLiked){
+            if (isLiked) {
                 Like createdLike = likeRepository.findByUserAndPost(user, post);
                 likeRepository.deleteById(createdLike.getId());
 
@@ -126,7 +140,7 @@ public class PostService {
                 LikedDTO likedDTO = new LikedDTO();
                 likedDTO.setIsLiked(false);
                 return new Response<>("success", likedDTO);
-            }else{
+            } else {
                 Like likePost = new Like();
                 likePost.setUser(user);
                 likePost.setPost(post);
@@ -141,13 +155,13 @@ public class PostService {
                 LikedDTO likedDTO = new LikedDTO(likePost, true);
                 return new Response<>("success", likedDTO);
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             return new Response<>("unsuccess", null);
         }
     }
 
     public Response<CreatedCommentDTO> createComment(CreateCommentDTO commentDTO) {
-        try{
+        try {
             User user = userRepository.findById(commentDTO.getUser().getId()).orElseThrow(() -> new RuntimeException("User not found."));
             Post post = postRepository.findById(commentDTO.getPost().getPostId()).orElseThrow(() -> new RuntimeException("Post not found."));
             Comment newComment = new Comment();
@@ -163,7 +177,22 @@ public class PostService {
 
             CreatedCommentDTO createdCommentDTO = new CreatedCommentDTO(newComment);
             return new Response<>("success", createdCommentDTO);
-        }catch(Exception e){
+        } catch (Exception e) {
+            return new Response<>("unsuccess", null);
+        }
+    }
+
+    public Response<List<CreatedCommentDTO>> getCommentListByPostId(Long postId) {
+        try {
+            List<Comment> commentList = commentRepository.findAllByPostOrderByCreatedTimeDesc(postId);
+            List<CreatedCommentDTO> createdCommentList = new ArrayList<>();
+
+            for (Comment comment : commentList) {
+                CreatedCommentDTO createdCommentDTO = new CreatedCommentDTO(comment);
+                createdCommentList.add(createdCommentDTO);
+            }
+            return new Response<>("success", createdCommentList);
+        } catch (Exception e) {
             return new Response<>("unsuccess", null);
         }
     }
