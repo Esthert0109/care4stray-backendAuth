@@ -34,7 +34,7 @@ public class PostController {
     }
 
     @PostMapping("/{postId}")
-    public ResponseEntity<Response<CreatedPostDTO>> getPostDetail(@PathVariable Long postId, @RequestBody Map<String, Integer> request) {
+    public ResponseEntity<Response<PostDTO>> getPostDetail(@PathVariable Long postId, @RequestBody Map<String, Integer> request) {
         if(postId == null || postId == 0 || request == null) {
             return ResponseEntity.badRequest().build();
         }

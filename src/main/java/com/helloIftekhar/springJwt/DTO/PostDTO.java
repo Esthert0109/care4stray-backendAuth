@@ -16,20 +16,29 @@ public class PostDTO {
     private List<String> picture;
     private int likeCount;
     private int commentCount;
+    private Boolean isliked;
     private LocalDateTime createdDate;
+    private String duration;
 
     public PostDTO() {
     }
 
-    public PostDTO(Post post) {
+    public PostDTO(Post post, Boolean isliked, String duration) {
         this.postId = post.getPostId();
         this.author = new UserDTO(post.getUser());
         this.isAdoption = post.getIsAdoption();
-        this.strayPost = new StrayDTO(post.getStray());
+        if (post.getStray() == null) {
+            this.strayPost = null;
+
+        } else {
+            this.strayPost = new StrayDTO(post.getStray());
+        }
         this.content = post.getContent();
         this.picture = post.getPicture();
+        this.isliked = isliked;
         this.likeCount = post.getLikeCount();
         this.commentCount = post.getCommentCount();
         this.createdDate = post.getCreatedDate();
+        this.duration = duration;
     }
 }

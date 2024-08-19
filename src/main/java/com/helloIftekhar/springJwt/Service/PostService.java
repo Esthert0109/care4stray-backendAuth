@@ -28,6 +28,9 @@ public class PostService {
     @Autowired
     private CommentRepository commentRepository;
 
+    @Autowired
+    private NewsService newsService;
+
     public void createAdoptionPost(Stray stray) {
         Post adoptionPost = new Post();
         adoptionPost.setUser(stray.getUser());
@@ -58,13 +61,14 @@ public class PostService {
         }
     }
 
-    public Response<CreatedPostDTO> getPostDetail(Long postId, Integer userId) {
+    public Response<PostDTO> getPostDetail(Long postId, Integer userId) {
         try {
             Post post = postRepository.findPostByPostId(postId);
             User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found."));
             Boolean isLiked = likeRepository.existsByUserAndPost(user, post);
+            String duration = newsService.formatDuration(post.getCreatedDate());
 
-            CreatedPostDTO createdPostDTO = new CreatedPostDTO(post, isLiked);
+            PostDTO createdPostDTO = new PostDTO(post, isLiked, duration);
 
             return new Response<>("success", createdPostDTO);
         } catch (Exception e) {
