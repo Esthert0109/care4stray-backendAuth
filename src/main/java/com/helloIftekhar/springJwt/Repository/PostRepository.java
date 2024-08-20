@@ -14,5 +14,9 @@ public interface PostRepository extends JpaRepository<Post, Long> {
         @Query("SELECT p FROM Post p WHERE p.isAdoption = false ORDER BY p.createdDate DESC")
         List<Post> findAllCreatedPost();
 
+        @Query("SELECT p FROM Post p WHERE p.isAdoption = false AND p.user.id = :userId ORDER BY p.createdDate DESC")
+        List<Post> findAllCreatedPostByUserId(Long userId);
+
+
         Post findPostByPostId(Long postId);
 }

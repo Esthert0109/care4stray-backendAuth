@@ -130,6 +130,34 @@ public class PostService {
             return new Response<>("unsuccess", null);
         }
     }
+    public Response<List<CreatedPostDTO>> getUserCreatedPostList(Integer userId) {
+        try {
+            List<Post> postList = postRepository.findAllCreatedPostByUserId(Long.valueOf(userId));
+            List<CreatedPostDTO> createdPostDTOList = new ArrayList<>();
+            User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found."));
+
+            for (Post post : postList) {
+                CreatedPostDTO createdPostDTO = new CreatedPostDTO();
+                Boolean isLiked = likeRepository.existsByUserAndPost(user, post);
+                createdPostDTO.setPostId(post.getPostId());
+                createdPostDTO.setAuthor(new UserDTO(post.getUser()));
+                createdPostDTO.setContent(post.getContent());
+                createdPostDTO.setPicture(post.getPicture());
+                createdPostDTO.setIsLiked(isLiked);
+                createdPostDTO.setLikeCount(post.getLikeCount());
+                createdPostDTO.setCommentCount(post.getCommentCount());
+                createdPostDTO.setCreatedDate(post.getCreatedDate());
+                createdPostDTO.setDuration(newsService.formatDuration(post.getCreatedDate()));
+
+                createdPostDTOList.add(createdPostDTO);
+            }
+
+            return new Response<>("success", createdPostDTOList);
+        } catch (Exception e) {
+            return new Response<>("unsuccess", null);
+        }
+    }
+
 
     public Response<LikedDTO> likeOrUnlikedPost(LikeDTO likeDTO) {
         try {
