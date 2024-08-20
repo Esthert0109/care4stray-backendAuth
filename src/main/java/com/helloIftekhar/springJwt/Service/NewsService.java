@@ -19,7 +19,7 @@ public class NewsService {
     @Autowired
     NewsRepository newsRepository;
 
-    public static String formatDuration(LocalDateTime inputDate) {
+    public String formatDuration(LocalDateTime inputDate) {
         try {
 
             // Set the time zone for the current time to the system's default time zone

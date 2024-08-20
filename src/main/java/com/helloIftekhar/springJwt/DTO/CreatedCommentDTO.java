@@ -10,6 +10,7 @@ public class CreatedCommentDTO {
     private UserDTO user;
     private String comment;
     private LocalDateTime createdDate;
+    private String duration;
 
     public CreatedCommentDTO() {
     }

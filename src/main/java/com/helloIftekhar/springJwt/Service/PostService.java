@@ -92,6 +92,7 @@ public class PostService {
                 adoptionPost.setLikeCount(post.getLikeCount());
                 adoptionPost.setCommentCount(post.getCommentCount());
                 adoptionPost.setCreatedDate(post.getCreatedDate());
+                adoptionPost.setDuration(newsService.formatDuration(post.getCreatedDate()));
 
                 adoptionPostDTOList.add(adoptionPost);
             }
@@ -119,6 +120,7 @@ public class PostService {
                 createdPostDTO.setLikeCount(post.getLikeCount());
                 createdPostDTO.setCommentCount(post.getCommentCount());
                 createdPostDTO.setCreatedDate(post.getCreatedDate());
+                createdPostDTO.setDuration(newsService.formatDuration(post.getCreatedDate()));
 
                 createdPostDTOList.add(createdPostDTO);
             }
@@ -193,6 +195,7 @@ public class PostService {
 
             for (Comment comment : commentList) {
                 CreatedCommentDTO createdCommentDTO = new CreatedCommentDTO(comment);
+                createdCommentDTO.setDuration(newsService.formatDuration(comment.getCreatedTime()));
                 createdCommentList.add(createdCommentDTO);
             }
             return new Response<>("success", createdCommentList);

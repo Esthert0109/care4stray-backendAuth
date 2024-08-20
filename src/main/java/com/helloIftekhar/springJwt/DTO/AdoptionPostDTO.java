@@ -14,6 +14,7 @@ public class AdoptionPostDTO {
     private int likeCount;
     private int commentCount;
     private LocalDateTime createdDate;
+    private String duration;
 
     public AdoptionPostDTO() {
     }
