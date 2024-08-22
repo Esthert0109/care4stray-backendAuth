@@ -231,4 +231,34 @@ public class PostService {
             return new Response<>("unsuccess", null);
         }
     }
+
+    public Response<List<PostDTO>> searchPostsByContent(Integer userId, String keyword) {
+        try {
+            List<Post> createdPostList = postRepository.searchCreatedPostsByContent(keyword);
+            List<Post> adoptionPostList = postRepository.searchAdoptionPostsByStrayContent(keyword);
+
+            List<PostDTO> postDTOList = new ArrayList<>();
+            User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found."));
+
+            // Process both created and adoption posts into PostDTO
+            for (Post post : createdPostList) {
+                PostDTO postDTO = new PostDTO(post, likeRepository.existsByUserAndPost(user, post),
+                        newsService.formatDuration(post.getCreatedDate()));
+                postDTOList.add(postDTO);
+            }
+
+            for (Post post : adoptionPostList) {
+                PostDTO postDTO = new PostDTO(post, likeRepository.existsByUserAndPost(user, post),
+                        newsService.formatDuration(post.getCreatedDate()));
+                postDTOList.add(postDTO);
+            }
+
+            return new Response<>("success", postDTOList);
+        } catch (Exception e) {
+            return new Response<>("unsuccess", null);
+        }
+    }
+
+
+
 }

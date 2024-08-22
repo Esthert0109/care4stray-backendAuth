@@ -83,4 +83,16 @@ public class PostController {
         }
         return ResponseEntity.ok(postService.getUserCreatedPostList(userId));
     }
+
+    @PostMapping("/search-posts")
+    public ResponseEntity<Response<List<PostDTO>>> searchPosts(@RequestBody Map<String, Object> request) {
+        Integer userId = (Integer) request.get("userId");
+        String keyword = (String) request.get("keyword");
+
+        if (userId == null || userId == 0 || keyword == null || keyword.isEmpty()) {
+            return ResponseEntity.badRequest().body(new Response<>("Invalid input", null));
+        }
+        return ResponseEntity.ok(postService.searchPostsByContent(userId, keyword));
+    }
+
 }
