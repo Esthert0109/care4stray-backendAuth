@@ -1,8 +1,10 @@
 package com.helloIftekhar.springJwt.Service;
 
+import com.helloIftekhar.springJwt.Bean.Post;
 import com.helloIftekhar.springJwt.Bean.Stray;
 import com.helloIftekhar.springJwt.Bean.User;
 import com.helloIftekhar.springJwt.DTO.StrayDTO;
+import com.helloIftekhar.springJwt.Repository.PostRepository;
 import com.helloIftekhar.springJwt.Repository.StrayRepository;
 import com.helloIftekhar.springJwt.Repository.UserRepository;
 import com.helloIftekhar.springJwt.Utils.Enum.StrayStatus;
@@ -20,6 +22,9 @@ public class StrayService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PostRepository postRepository;
 
     @Autowired
     private PostService postService;
@@ -47,6 +52,19 @@ public class StrayService {
             StrayDTO savedStray = new StrayDTO(stray);
             return new Response<>("success", savedStray);
         } catch (Exception e) {
+            return new Response<>("unsuccess", null);
+        }
+    }
+
+    public Response<String> deleteStray(StrayDTO strayDTO) {
+        try{
+            Post relatedPost = postRepository.findPostByStray_StrayId(strayDTO.getStrayId());
+            postRepository.delete(relatedPost);
+            Stray selectedStray = strayRepository.findById(strayDTO.getStrayId()).orElseThrow(() -> new RuntimeException("Stray not found"));
+            strayRepository.delete(selectedStray);
+
+            return new Response<>("success", "Stray deleted successfully");
+        }catch(Exception e){
             return new Response<>("unsuccess", null);
         }
     }

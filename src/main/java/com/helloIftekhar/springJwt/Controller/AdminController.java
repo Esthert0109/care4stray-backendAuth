@@ -133,6 +133,14 @@ public class AdminController {
         return ResponseEntity.ok(strayService.createStray(request));
     }
 
+    @PostMapping("/adoption/delete_stray")
+    public ResponseEntity<Response<String>> deleteStray (@RequestBody StrayDTO request) {
+        if(request == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(strayService.deleteStray(request));
+    }
+
     @GetMapping("/adoption/stray/all")
     public ResponseEntity<Response<List<StrayDTO>>> getAllStray() {
         try{

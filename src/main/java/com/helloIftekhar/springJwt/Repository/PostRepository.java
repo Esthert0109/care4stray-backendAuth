@@ -26,6 +26,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
         @Query("SELECT p FROM Post p JOIN p.stray s LEFT JOIN s.behaviour b WHERE s.name LIKE %:keyword% OR b LIKE %:keyword%")
         List<Post> searchAdoptionPostsByStrayContent(@Param("keyword") String keyword);
 
+        Post findPostByStray_StrayId(Long strayId);
 
 //        @Query("SELECT p FROM Post p WHERE p.stray.name LIKE %:keyword%")
 //        List<Post> searchAdoptionPostsByStrayContent(@Param("keyword") String keyword);

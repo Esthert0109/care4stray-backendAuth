@@ -11,4 +11,6 @@ public interface StrayRepository extends JpaRepository<Stray, Long> {
 
     @Query("SELECT s FROM Stray s WHERE s.status = 'AVAILABLE' OR s.status = 'RETURNED' ORDER BY s.updatedDate DESC")
     List<Stray> findAllStray();
+
+
 }

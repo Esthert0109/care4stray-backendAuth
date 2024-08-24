@@ -90,6 +90,7 @@ public class User implements UserDetails {
         this.lastName = user.getLastName();
         this.username = user.getUsername();
         this.password = user.getPassword();
+        this.userAvatar = user.getUserAvatar();
         this.role = user.getRole();
         this.phoneNumber = user.getPhoneNumber();
         this.gender = user.getGender();
