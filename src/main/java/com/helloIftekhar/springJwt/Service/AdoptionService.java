@@ -110,6 +110,11 @@ public class AdoptionService {
         try{
             Adoption selectedAdoption = adoptionRepository.findByUserIdAndAdoptionId(userId, applicationId);
             if(selectedAdoption != null){
+                Long strayId = selectedAdoption.getStray().getStrayId();
+                Stray selectedStray = strayRepository.findById(strayId).orElse(null);
+                selectedStray.setStatus(StrayStatus.AVAILABLE);
+                strayRepository.save(selectedStray);
+
                 adoptionRepository.delete(selectedAdoption);
                 return new Response<>("success", "Adoption canceled");
             }else{
