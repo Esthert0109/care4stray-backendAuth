@@ -6,6 +6,7 @@ import com.helloIftekhar.springJwt.Repository.CommentRepository;
 import com.helloIftekhar.springJwt.Repository.LikeRepository;
 import com.helloIftekhar.springJwt.Repository.PostRepository;
 import com.helloIftekhar.springJwt.Repository.UserRepository;
+import com.helloIftekhar.springJwt.Utils.Enum.StrayStatus;
 import com.helloIftekhar.springJwt.Utils.Responses.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -85,16 +86,22 @@ public class PostService {
             for (Post post : postList) {
                 AdoptionPostDTO adoptionPost = new AdoptionPostDTO();
                 Boolean isLiked = likeRepository.existsByUserAndPost(user, post);
-                adoptionPost.setId(post.getPostId());
-                adoptionPost.setUser(new UserDTO(post.getUser()));
-                adoptionPost.setStray(new StrayDTO(post.getStray()));
-                adoptionPost.setIsLike(isLiked);
-                adoptionPost.setLikeCount(post.getLikeCount());
-                adoptionPost.setCommentCount(post.getCommentCount());
-                adoptionPost.setCreatedDate(post.getCreatedDate());
-                adoptionPost.setDuration(newsService.formatDuration(post.getCreatedDate()));
 
-                adoptionPostDTOList.add(adoptionPost);
+                Stray stray = post.getStray();
+                if (stray.getStatus() == StrayStatus.AVAILABLE || stray.getStatus() == StrayStatus.RETURNED) {
+                    adoptionPost.setId(post.getPostId());
+                    adoptionPost.setUser(new UserDTO(post.getUser()));
+                    adoptionPost.setStray(new StrayDTO(stray));
+
+                    //                adoptionPost.setStray(new StrayDTO(post.getStray()));
+                    adoptionPost.setIsLike(isLiked);
+                    adoptionPost.setLikeCount(post.getLikeCount());
+                    adoptionPost.setCommentCount(post.getCommentCount());
+                    adoptionPost.setCreatedDate(post.getCreatedDate());
+                    adoptionPost.setDuration(newsService.formatDuration(post.getCreatedDate()));
+
+                    adoptionPostDTOList.add(adoptionPost);
+                }
             }
 
             return new Response<>("success", adoptionPostDTOList);
