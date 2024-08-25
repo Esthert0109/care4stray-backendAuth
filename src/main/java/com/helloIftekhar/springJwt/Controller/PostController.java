@@ -3,6 +3,7 @@ package com.helloIftekhar.springJwt.Controller;
 import com.helloIftekhar.springJwt.DTO.*;
 import com.helloIftekhar.springJwt.Service.PostService;
 import com.helloIftekhar.springJwt.Utils.Responses.Response;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,11 +36,11 @@ public class PostController {
 
     @PostMapping("/{postId}")
     public ResponseEntity<Response<PostDTO>> getPostDetail(@PathVariable Long postId, @RequestBody Map<String, Integer> request) {
-        if(postId == null || postId == 0 || request == null) {
+        if (postId == null || postId == 0 || request == null) {
             return ResponseEntity.badRequest().build();
         }
         Integer userId = request.get("userId");
-        return ResponseEntity.ok(postService.getPostDetail(postId,userId));
+        return ResponseEntity.ok(postService.getPostDetail(postId, userId));
     }
 
     @PostMapping("/create-list")
@@ -49,6 +50,11 @@ public class PostController {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(postService.getCreatedPostList(userId));
+    }
+
+    @GetMapping("/near-post")
+    public ResponseEntity<Response<List<CreatedPostDTO>>> nearPost(HttpServletRequest request) {
+        return ResponseEntity.ok(postService.getCreatedPostListByUserLocation(request));
     }
 
     @PostMapping("/like")
@@ -69,7 +75,7 @@ public class PostController {
 
     @GetMapping("/comment-list/{id}")
     public ResponseEntity<Response<List<CreatedCommentDTO>>> getCommentList(@PathVariable Long id) {
-        if(id == null || id == 0) {
+        if (id == null || id == 0) {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(postService.getCommentListByPostId(id));
