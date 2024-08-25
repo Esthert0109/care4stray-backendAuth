@@ -2,11 +2,10 @@ package com.helloIftekhar.springJwt.Service;
 
 import com.helloIftekhar.springJwt.Bean.*;
 import com.helloIftekhar.springJwt.DTO.*;
-import com.helloIftekhar.springJwt.Repository.CommentRepository;
-import com.helloIftekhar.springJwt.Repository.LikeRepository;
-import com.helloIftekhar.springJwt.Repository.PostRepository;
-import com.helloIftekhar.springJwt.Repository.UserRepository;
+import com.helloIftekhar.springJwt.Repository.*;
+import com.helloIftekhar.springJwt.Service.Auth.AuthenticationService;
 import com.helloIftekhar.springJwt.Utils.Responses.Response;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +28,13 @@ public class PostService {
     private CommentRepository commentRepository;
 
     @Autowired
+    private TokenRepository tokenRepository;
+
+    @Autowired
     private NewsService newsService;
+
+    @Autowired
+    private AuthenticationService authenticationService;
 
     public void createAdoptionPost(Stray stray) {
         Post adoptionPost = new Post();
@@ -130,6 +135,46 @@ public class PostService {
             return new Response<>("unsuccess", null);
         }
     }
+
+    public Response<List<CreatedPostDTO>> getCreatedPostListByUserLocation(HttpServletRequest header) {
+        try {
+            String token = authenticationService.extractTokenFromHeader(header);
+            if (token == null || token == "") {
+                return new Response<>("unsuccess", null);
+            }
+            Token tokenSelected = tokenRepository.findByAccessToken(token).orElseThrow(() -> new RuntimeException("Token not found."));
+            User user = tokenSelected.getUser();
+
+            if (user.getState() != null) {
+                String userState = user.getState();
+
+                List<Post> postList = postRepository.findAllNearPost(userState);
+                List<CreatedPostDTO> createdPostDTOList = new ArrayList<>();
+                for (Post post : postList) {
+                    CreatedPostDTO createdPostDTO = new CreatedPostDTO();
+                    Boolean isLiked = likeRepository.existsByUserAndPost(user, post);
+                    createdPostDTO.setPostId(post.getPostId());
+                    createdPostDTO.setAuthor(new UserDTO(post.getUser()));
+                    createdPostDTO.setContent(post.getContent());
+                    createdPostDTO.setPicture(post.getPicture());
+                    createdPostDTO.setIsLiked(isLiked);
+                    createdPostDTO.setLikeCount(post.getLikeCount());
+                    createdPostDTO.setCommentCount(post.getCommentCount());
+                    createdPostDTO.setCreatedDate(post.getCreatedDate());
+                    createdPostDTO.setDuration(newsService.formatDuration(post.getCreatedDate()));
+
+                    createdPostDTOList.add(createdPostDTO);
+                }
+                return new Response<>("success", createdPostDTOList);
+            } else {
+                return new Response<>("unsuccess", null);
+            }
+
+        } catch (Exception e) {
+            return new Response<>("unsuccess", null);
+        }
+    }
+
     public Response<List<CreatedPostDTO>> getUserCreatedPostList(Integer userId) {
         try {
             List<Post> postList = postRepository.findAllCreatedPostByUserId(Long.valueOf(userId));
@@ -242,14 +287,12 @@ public class PostService {
 
             // Process both created and adoption posts into PostDTO
             for (Post post : createdPostList) {
-                PostDTO postDTO = new PostDTO(post, likeRepository.existsByUserAndPost(user, post),
-                        newsService.formatDuration(post.getCreatedDate()));
+                PostDTO postDTO = new PostDTO(post, likeRepository.existsByUserAndPost(user, post), newsService.formatDuration(post.getCreatedDate()));
                 postDTOList.add(postDTO);
             }
 
             for (Post post : adoptionPostList) {
-                PostDTO postDTO = new PostDTO(post, likeRepository.existsByUserAndPost(user, post),
-                        newsService.formatDuration(post.getCreatedDate()));
+                PostDTO postDTO = new PostDTO(post, likeRepository.existsByUserAndPost(user, post), newsService.formatDuration(post.getCreatedDate()));
                 postDTOList.add(postDTO);
             }
 
@@ -258,7 +301,6 @@ public class PostService {
             return new Response<>("unsuccess", null);
         }
     }
-
 
 
 }
