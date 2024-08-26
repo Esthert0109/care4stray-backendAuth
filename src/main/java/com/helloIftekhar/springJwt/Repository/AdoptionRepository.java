@@ -9,5 +9,7 @@ public interface AdoptionRepository extends JpaRepository<Adoption, Long> {
 
     List<Adoption> findByUserIdOrderByCreatedDateDesc(Integer userId);
 
+    List<Adoption> findAllByOrderByCreatedDateDesc();
+
     Adoption findByUserIdAndAdoptionId(Integer userId, Long adoptionId);
 }

@@ -74,6 +74,15 @@ public class AdoptionService {
        }
     }
 
+    public Response<List<AdoptionApplicationDTO>> getAdminAdoptionApplications() {
+        try{
+            List<Adoption> adoptionList = adoptionRepository.findAllByOrderByCreatedDateDesc();
+            return new Response<>("success", adoptionList.stream().map(adoption -> new AdoptionApplicationDTO(adoption)).toList());
+        }catch (RuntimeException e) {
+            return new Response<>("unsuccess", null);
+        }
+    }
+
     public Response<AdoptionApplicationDTO> getAdoptionApplicationDetail(Long applicationId){
         try{
             Adoption selectedAdoption = adoptionRepository.findById(applicationId).orElseThrow(() -> new RuntimeException("Adoption not found"));

@@ -3,10 +3,8 @@ package com.helloIftekhar.springJwt.Controller;
 import com.helloIftekhar.springJwt.Bean.News;
 import com.helloIftekhar.springJwt.Bean.Stray;
 import com.helloIftekhar.springJwt.Bean.User;
-import com.helloIftekhar.springJwt.DTO.DonationDTO;
-import com.helloIftekhar.springJwt.DTO.NewsDTO;
-import com.helloIftekhar.springJwt.DTO.StrayDTO;
-import com.helloIftekhar.springJwt.DTO.UserDTO;
+import com.helloIftekhar.springJwt.DTO.*;
+import com.helloIftekhar.springJwt.Service.AdoptionService;
 import com.helloIftekhar.springJwt.Service.Auth.AuthenticationService;
 import com.helloIftekhar.springJwt.Service.DonationService;
 import com.helloIftekhar.springJwt.Service.NewsService;
@@ -35,8 +33,12 @@ public class AdminController {
 
     @Autowired
     DonationService donationService;
+
     @Autowired
     private StrayService strayService;
+
+    @Autowired
+    private AdoptionService adoptionService;
 
     @GetMapping("/demo")
     public ResponseEntity<String> demo() {
@@ -166,5 +168,14 @@ public class AdminController {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(strayService.updateStray(request));
+    }
+
+    @GetMapping("/adoption/application_list_admin")
+    public ResponseEntity<Response<List<AdoptionApplicationDTO>>> getApplicationList() {
+        try{
+            return ResponseEntity.ok(adoptionService.getAdminAdoptionApplications());
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new Response<>("unsuccess", null));
+        }
     }
 }
