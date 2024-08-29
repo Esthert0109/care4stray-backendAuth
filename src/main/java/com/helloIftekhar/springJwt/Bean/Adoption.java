@@ -1,5 +1,6 @@
 package com.helloIftekhar.springJwt.Bean;
 
+import com.helloIftekhar.springJwt.Utils.Enum.AdoptionStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -21,6 +22,10 @@ public class Adoption {
     @OneToOne
     @JoinColumn(name = "stray_id", nullable = false)
     private Stray stray;
+
+    @Column(name = "adoption_status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private AdoptionStatus adoptionStatus;
 
     @Column(name = "created_date", nullable = false)
     private LocalDateTime createdDate;

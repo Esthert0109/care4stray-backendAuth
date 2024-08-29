@@ -8,6 +8,7 @@ import com.helloIftekhar.springJwt.Repository.AdoptionRepository;
 import com.helloIftekhar.springJwt.Repository.StrayRepository;
 import com.helloIftekhar.springJwt.Repository.UserRepository;
 import com.helloIftekhar.springJwt.Service.Auth.AuthenticationService;
+import com.helloIftekhar.springJwt.Utils.Enum.AdoptionStatus;
 import com.helloIftekhar.springJwt.Utils.Enum.StrayStatus;
 import com.helloIftekhar.springJwt.Utils.Responses.Response;
 import jakarta.servlet.http.HttpServletRequest;
@@ -45,7 +46,8 @@ public class AdoptionService {
             User updatedUser = userRepository.findById(appliedUser.getId()).orElseThrow(() -> new RuntimeException("User not found"));
 
             //            set status
-            strayService.updateStrayStatus(adoptionApplicationDTO.getStray().getStrayId(), StrayStatus.PENDING);
+            strayService.updateStrayStatus(adoptionApplicationDTO.getStray().getStrayId(), StrayStatus.ADOPTION_IN_PROGRESS);
+
 
             //            find stray info
             Stray stray = strayRepository.findById(adoptionApplicationDTO.getStray().getStrayId()).orElseThrow(() -> new RuntimeException("Stray not found"));
@@ -54,6 +56,7 @@ public class AdoptionService {
             adoptionApplication.setStray(stray);
             adoptionApplication.setUser(updatedUser);
             adoptionApplication.setCreatedDate(LocalDateTime.now());
+            adoptionApplication.setAdoptionStatus(AdoptionStatus.APPLICATION_PENDING);
             adoptionRepository.save(adoptionApplication);
 
             AdoptionApplicationDTO applicationResponse = new AdoptionApplicationDTO(adoptionApplication);
@@ -98,12 +101,13 @@ public class AdoptionService {
             User appliedUser = new User(adoptionApplicationDTO.getUser());
             authService.updateUserInfo(requestHeader, appliedUser);
             Stray selectedStray = strayRepository.findById(adoptionApplicationDTO.getStray().getStrayId()).orElse(null);
-            selectedStray.setStatus(StrayStatus.PENDING);
+            selectedStray.setStatus(StrayStatus.ADOPTION_IN_PROGRESS);
             strayRepository.save(selectedStray);
 
             Adoption adoptionApplication = adoptionRepository.findById(adoptionApplicationDTO.getAdoptionId()).orElseThrow(() -> new RuntimeException("Adoption not found"));
             adoptionApplication.setStray(selectedStray);
             adoptionApplication.setUser(appliedUser);
+            adoptionApplication.setAdoptionStatus(adoptionApplicationDTO.getAdoptionStatus());
             adoptionApplication.setCreatedDate(LocalDateTime.now());
 
             adoptionRepository.save(adoptionApplication);
