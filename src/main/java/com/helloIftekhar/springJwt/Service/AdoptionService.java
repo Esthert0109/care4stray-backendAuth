@@ -4,6 +4,7 @@ import com.helloIftekhar.springJwt.Bean.Adoption;
 import com.helloIftekhar.springJwt.Bean.Stray;
 import com.helloIftekhar.springJwt.Bean.User;
 import com.helloIftekhar.springJwt.DTO.AdoptionApplicationDTO;
+import com.helloIftekhar.springJwt.DTO.StrayDTO;
 import com.helloIftekhar.springJwt.Repository.AdoptionRepository;
 import com.helloIftekhar.springJwt.Repository.StrayRepository;
 import com.helloIftekhar.springJwt.Repository.UserRepository;
@@ -95,6 +96,32 @@ public class AdoptionService {
             return new Response<>("unsuccess", null);
         }
     }
+
+    public Response<AdoptionApplicationDTO> updateApplicationStatus(Long id, Long strayId, AdoptionStatus status) {
+        try {
+            Adoption adoptionApplication = adoptionRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Adoption not found"));
+            adoptionApplication.setAdoptionStatus(status);
+            adoptionRepository.save(adoptionApplication);
+
+            Stray selectedStray = strayRepository.findById(strayId)
+                    .orElseThrow(() -> new RuntimeException("Stray not found"));
+
+            if (status == AdoptionStatus.APPLICATION_SUCCESS) {
+                selectedStray.setStatus(StrayStatus.ADOPTED);
+            } else {
+                selectedStray.setStatus(StrayStatus.AVAILABLE);
+            }
+
+            strayRepository.save(selectedStray);
+
+            AdoptionApplicationDTO savedAdoption = new AdoptionApplicationDTO(adoptionApplication);
+            return new Response<>("success", savedAdoption);
+        } catch (RuntimeException e) {
+            return new Response<>("unsuccess", null);
+        }
+    }
+
 
     public Response<AdoptionApplicationDTO> updateApplication(AdoptionApplicationDTO adoptionApplicationDTO, HttpServletRequest requestHeader) {
         try{

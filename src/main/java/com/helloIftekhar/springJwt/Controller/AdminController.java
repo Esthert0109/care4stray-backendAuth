@@ -9,6 +9,7 @@ import com.helloIftekhar.springJwt.Service.Auth.AuthenticationService;
 import com.helloIftekhar.springJwt.Service.DonationService;
 import com.helloIftekhar.springJwt.Service.NewsService;
 import com.helloIftekhar.springJwt.Service.StrayService;
+import com.helloIftekhar.springJwt.Utils.Enum.AdoptionStatus;
 import com.helloIftekhar.springJwt.Utils.Enum.NewsStatus;
 import com.helloIftekhar.springJwt.Utils.Enum.StrayStatus;
 import com.helloIftekhar.springJwt.Utils.Enum.UserStatus;
@@ -177,5 +178,16 @@ public class AdminController {
         }catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new Response<>("unsuccess", null));
         }
+    }
+
+    @PutMapping("/adoption/updateApplicationStatus/{id}")
+    public ResponseEntity<Response<AdoptionApplicationDTO>> updateApplicationStatus(@RequestBody Map<String, String> request, @PathVariable Long id) {
+        String status = request.get("applicationStatus");
+        Long strayID = Long.parseLong(request.get("strayID"));
+        if (status == null || id == null || strayID == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        AdoptionStatus applicationStatus = AdoptionStatus.valueOf(status.toUpperCase());
+        return ResponseEntity.ok(adoptionService.updateApplicationStatus(id, strayID, applicationStatus));
     }
 }
