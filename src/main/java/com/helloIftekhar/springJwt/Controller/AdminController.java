@@ -63,10 +63,10 @@ public class AdminController {
     }
 
     @GetMapping("/user/all")
-    public ResponseEntity<Response<List<UserDTO>>> getAllUsers() {
+    public ResponseEntity<Response<List<UserListDTO>>> getAllUsers() {
         try {
-            List<UserDTO> userList = authService.getAllUserOrderByFirstName();
-            return ResponseEntity.ok(new Response<List<UserDTO>>("success", userList));
+            List<UserListDTO> userList = authService.getAllUserOrderByFirstName();
+            return ResponseEntity.ok(new Response<List<UserListDTO>>("success", userList));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new Response<>("unsuccess", null));
         }

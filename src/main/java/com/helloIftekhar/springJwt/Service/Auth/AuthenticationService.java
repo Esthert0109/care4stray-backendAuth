@@ -7,11 +7,12 @@ import com.helloIftekhar.springJwt.Bean.User;
 import com.helloIftekhar.springJwt.DTO.NewsDTO;
 import com.helloIftekhar.springJwt.DTO.PostStatisticsDTO;
 import com.helloIftekhar.springJwt.DTO.UserDTO;
+import com.helloIftekhar.springJwt.DTO.UserListDTO;
+import com.helloIftekhar.springJwt.Repository.AdoptionRepository;
 import com.helloIftekhar.springJwt.Repository.NewsRepository;
 import com.helloIftekhar.springJwt.Repository.TokenRepository;
 import com.helloIftekhar.springJwt.Repository.UserRepository;
 import com.helloIftekhar.springJwt.Utils.Enum.NewsStatus;
-import com.helloIftekhar.springJwt.Utils.Enum.Role;
 import com.helloIftekhar.springJwt.Utils.Enum.UserStatus;
 import com.helloIftekhar.springJwt.Utils.Responses.AuthenticationResponse;
 import com.helloIftekhar.springJwt.Utils.Responses.LoginResponse;
@@ -30,8 +31,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class AuthenticationService {
@@ -42,14 +43,17 @@ public class AuthenticationService {
     private final TokenRepository tokenRepository;
     private final AuthenticationManager authenticationManager;
 
+    private final AdoptionRepository adoptionRepository;
+
     private final NewsRepository newsRepo;
 
-    public AuthenticationService(UserRepository repository, PasswordEncoder passwordEncoder, JwtService jwtService, TokenRepository tokenRepository, AuthenticationManager authenticationManager, NewsRepository newsRepo) {
+    public AuthenticationService(UserRepository repository, PasswordEncoder passwordEncoder, JwtService jwtService, TokenRepository tokenRepository, AuthenticationManager authenticationManager, AdoptionRepository adoptionRepository, NewsRepository newsRepo) {
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.tokenRepository = tokenRepository;
         this.authenticationManager = authenticationManager;
+        this.adoptionRepository = adoptionRepository;
         this.newsRepo = newsRepo;
     }
 
@@ -82,8 +86,7 @@ public class AuthenticationService {
 
             return ResponseEntity.ok(new AuthenticationResponse(accessToken, refreshToken, "User registration was successful"));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new AuthenticationResponse(null, null, "Invalid registration")
-            );
+            return ResponseEntity.badRequest().body(new AuthenticationResponse(null, null, "Invalid registration"));
         }
 
     }
@@ -100,9 +103,9 @@ public class AuthenticationService {
 
             UserDTO userLogin = new UserDTO(user);
 
-            return ResponseEntity.ok(new LoginResponse("Login successfully",accessToken, userLogin));
+            return ResponseEntity.ok(new LoginResponse("Login successfully", accessToken, userLogin));
         } catch (BadCredentialsException e) {
-            return ResponseEntity.badRequest().body(new LoginResponse("Invalid username or password",null, null));
+            return ResponseEntity.badRequest().body(new LoginResponse("Invalid username or password", null, null));
         }
     }
 
@@ -166,25 +169,38 @@ public class AuthenticationService {
         }
     }
 
-    public Response<Boolean> checkUserDetails(String username){
-        try{
+    public Response<Boolean> checkUserDetails(String username) {
+        try {
             User user = repository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
-            if(user.getId()==null|| user.getFirstName()==null||user.getLastName()==null||user.getUsername()==null || user.getPassword()==null || user.getRole()==null||user.getUserAvatar()==null ||user.getPhoneNumber()==null || user.getGender() == null||user.getDateOfBirth()==null || user.getPostal()==null || user.getAddress()==null || user.getCity()==null ||user.getOccupation()==null){
+            if (user.getId() == null || user.getFirstName() == null || user.getLastName() == null || user.getUsername() == null || user.getPassword() == null || user.getRole() == null || user.getUserAvatar() == null || user.getPhoneNumber() == null || user.getGender() == null || user.getDateOfBirth() == null || user.getPostal() == null || user.getAddress() == null || user.getCity() == null || user.getOccupation() == null) {
                 return new Response<>("success", false);
             }
             return new Response<>("success", true);
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             return new Response<>("unsuccess", null);
         }
     }
 
-    public List<UserDTO> getAllUserOrderByFirstName() {
+    public List<UserListDTO> getAllUserOrderByFirstName() {
         List<User> userList = repository.findAllByOrderByFirstNameAsc();
-        return userList.stream()
-                .filter(user -> !user.getUserStatus().equals(UserStatus.DEACTIVATED))
-                .filter(user -> user.getRole().equals(Role.USER))
-                .map(user -> new UserDTO(user))
-                .collect(Collectors.toList());
+
+        List<UserListDTO> userListDTOS = new ArrayList<>();
+
+        for (User user: userList){
+            boolean isAdopted = adoptionRepository.existsByUserAndAdoptionStatus_ApplicationSuccess(user);
+            int numAdopted = adoptionRepository.countAdoptionsByUserAndAdoptionStatus_ApplicationSuccess(user);
+
+            UserListDTO userInList = new UserListDTO(user, isAdopted, numAdopted);
+            userListDTOS.add(userInList);
+        }
+
+        return userListDTOS;
+
+//        return userList.stream()
+//                .filter(user -> !user.getUserStatus().equals(UserStatus.DEACTIVATED))
+//                .filter(user -> user.getRole().equals(Role.USER))
+//                .map(user -> new UserDTO(user))
+//                .collect(Collectors.toList());
     }
 
     private void revokeAllTokenByUser(User user) {
@@ -252,15 +268,15 @@ public class AuthenticationService {
     /****************************** News Service ********************************/
     @Transactional
     public Response<NewsDTO> updateNewsStatus(Long id, NewsStatus status) {
-        try{
-            News selectedNews = newsRepo.findById(id).orElseThrow(()-> new RuntimeException("News not found"));
+        try {
+            News selectedNews = newsRepo.findById(id).orElseThrow(() -> new RuntimeException("News not found"));
             selectedNews.setStatus(status);
             newsRepo.save(selectedNews);
 
             NewsDTO updatedNews = new NewsDTO(selectedNews);
 
             return new Response<NewsDTO>("success", updatedNews);
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             return new Response<>("unsuccess", null);
         }
     }
@@ -270,7 +286,7 @@ public class AuthenticationService {
         try {
             // Get the current time and time one week ago
             LocalDateTime now = LocalDateTime.now();
-            LocalDateTime oneWeekAgo = now.minus(1, ChronoUnit.WEEKS);
+            LocalDateTime oneWeekAgo = now.minusWeeks(1);
 
             // Count the total posts
             long totalPosts = repository.count();
@@ -279,7 +295,7 @@ public class AuthenticationService {
             long postsThisWeek = repository.countByCreatedDateBetween(oneWeekAgo, now);
 
             // Count the posts created in the week before last
-            LocalDateTime twoWeeksAgo = now.minus(2, ChronoUnit.WEEKS);
+            LocalDateTime twoWeeksAgo = now.minusWeeks(2);
             long postsLastWeek = repository.countByCreatedDateBetween(twoWeeksAgo, oneWeekAgo);
 
             // Calculate the percentage increase
