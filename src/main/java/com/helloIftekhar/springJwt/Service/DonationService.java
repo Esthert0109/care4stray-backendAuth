@@ -3,6 +3,7 @@ package com.helloIftekhar.springJwt.Service;
 import com.helloIftekhar.springJwt.Bean.Donation;
 import com.helloIftekhar.springJwt.Bean.User;
 import com.helloIftekhar.springJwt.DTO.DonationDTO;
+import com.helloIftekhar.springJwt.DTO.DonationStatisticsDTO;
 import com.helloIftekhar.springJwt.DTO.UserDTO;
 import com.helloIftekhar.springJwt.Repository.DonationRepository;
 import com.helloIftekhar.springJwt.Repository.UserRepository;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
@@ -110,4 +112,35 @@ public class DonationService {
         }
     }
 
+    public Response<DonationStatisticsDTO> getDonationStatistics() {
+        try {
+            // Get current time and time one week ago
+            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime oneWeekAgo = now.minus(1, ChronoUnit.WEEKS);
+
+            // Total amount of donations
+            Double totalAmount = donationRepository.sumByCreatedDateBetween(LocalDateTime.MIN, LocalDateTime.now());
+
+            // Amount of donations in the last week
+            Double amountThisWeek = donationRepository.sumByCreatedDateBetween(oneWeekAgo, now);
+
+            // Amount of donations in the week before last
+            LocalDateTime twoWeeksAgo = now.minus(2, ChronoUnit.WEEKS);
+            Double amountLastWeek = donationRepository.sumByCreatedDateBetween(twoWeeksAgo, oneWeekAgo);
+
+            // Calculate percentage increase
+            double percentageIncrease = 0;
+            if (amountLastWeek != null && amountLastWeek > 0) {
+                percentageIncrease = ((amountThisWeek - amountLastWeek) / amountLastWeek) * 100;
+            } else if (amountThisWeek != null && amountThisWeek > 0) {
+                percentageIncrease = 100;
+            }
+
+            // Create DTO and return response
+            DonationStatisticsDTO statisticsDTO = new DonationStatisticsDTO(totalAmount, percentageIncrease);
+            return new Response<>("success", statisticsDTO);
+        } catch (Exception e) {
+            return new Response<>("unsuccess", null);
+        }
+    }
 }

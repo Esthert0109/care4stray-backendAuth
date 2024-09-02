@@ -4,6 +4,7 @@ import com.helloIftekhar.springJwt.Bean.Post;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import java.time.LocalDateTime;
 
 import java.util.List;
 
@@ -30,6 +31,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
         List<Post> searchAdoptionPostsByStrayContent(@Param("keyword") String keyword);
 
         Post findPostByStray_StrayId(Long strayId);
+
+        long countByCreatedDateBetween(LocalDateTime startDate, LocalDateTime endDate);
 
 //        @Query("SELECT p FROM Post p WHERE p.stray.name LIKE %:keyword%")
 //        List<Post> searchAdoptionPostsByStrayContent(@Param("keyword") String keyword);

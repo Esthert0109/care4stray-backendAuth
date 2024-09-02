@@ -4,11 +4,8 @@ import com.helloIftekhar.springJwt.Bean.News;
 import com.helloIftekhar.springJwt.Bean.Stray;
 import com.helloIftekhar.springJwt.Bean.User;
 import com.helloIftekhar.springJwt.DTO.*;
-import com.helloIftekhar.springJwt.Service.AdoptionService;
+import com.helloIftekhar.springJwt.Service.*;
 import com.helloIftekhar.springJwt.Service.Auth.AuthenticationService;
-import com.helloIftekhar.springJwt.Service.DonationService;
-import com.helloIftekhar.springJwt.Service.NewsService;
-import com.helloIftekhar.springJwt.Service.StrayService;
 import com.helloIftekhar.springJwt.Utils.Enum.AdoptionStatus;
 import com.helloIftekhar.springJwt.Utils.Enum.NewsStatus;
 import com.helloIftekhar.springJwt.Utils.Enum.StrayStatus;
@@ -41,6 +38,9 @@ public class AdminController {
     @Autowired
     private AdoptionService adoptionService;
 
+    @Autowired
+    private PostService postService;
+
     @GetMapping("/demo")
     public ResponseEntity<String> demo() {
         return ResponseEntity.ok("Hello from secured url");
@@ -67,6 +67,36 @@ public class AdminController {
         try {
             List<UserDTO> userList = authService.getAllUserOrderByFirstName();
             return ResponseEntity.ok(new Response<List<UserDTO>>("success", userList));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new Response<>("unsuccess", null));
+        }
+    }
+
+    @GetMapping("/poststatistics")
+    public ResponseEntity<Response<PostStatisticsDTO>> getPostStatistics() {
+        try {
+            Response<PostStatisticsDTO> postStatistics = postService.getPostStatistics();
+            return ResponseEntity.ok(postStatistics);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new Response<>("unsuccess", null));
+        }
+    }
+
+    @GetMapping("/userstatistics")
+    public ResponseEntity<Response<PostStatisticsDTO>> getUserStatistics() {
+        try {
+            Response<PostStatisticsDTO> postStatistics = authService.getUserStatistics();
+            return ResponseEntity.ok(postStatistics);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new Response<>("unsuccess", null));
+        }
+    }
+
+    @GetMapping("/donationstatistics")
+    public ResponseEntity<Response<DonationStatisticsDTO>> getDonationStatistics() {
+        try {
+            Response<DonationStatisticsDTO> statisticsResponse = donationService.getDonationStatistics();
+            return ResponseEntity.ok(statisticsResponse);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new Response<>("unsuccess", null));
         }

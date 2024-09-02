@@ -14,6 +14,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -80,6 +81,9 @@ public class User implements UserDetails {
     @Column(name = "occupation")
     private Occupation occupation;
 
+    @Column(name = "created_date")
+    private LocalDateTime createdDate;
+
     public User() {
     }
 
@@ -101,6 +105,7 @@ public class User implements UserDetails {
         this.occupation = user.getOccupation();
         this.userStatus = user.getUserStatus();
         this.state = user.getState();
+        this.createdDate = user.getCreatedDate();
     }
 
 
@@ -265,5 +270,13 @@ public class User implements UserDetails {
 
     public void setState(String state) {
         this.state = state;
+    }
+
+    public LocalDateTime getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(LocalDateTime createdDate) {
+        this.createdDate = createdDate;
     }
 }

@@ -5,6 +5,7 @@ import com.helloIftekhar.springJwt.Bean.News;
 import com.helloIftekhar.springJwt.Bean.Token;
 import com.helloIftekhar.springJwt.Bean.User;
 import com.helloIftekhar.springJwt.DTO.NewsDTO;
+import com.helloIftekhar.springJwt.DTO.PostStatisticsDTO;
 import com.helloIftekhar.springJwt.DTO.UserDTO;
 import com.helloIftekhar.springJwt.Repository.NewsRepository;
 import com.helloIftekhar.springJwt.Repository.TokenRepository;
@@ -27,6 +28,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -68,6 +71,7 @@ public class AuthenticationService {
             user.setUserStatus(UserStatus.ACTIVE);
             user.setRole(request.getRole());
             user.setUserAvatar(request.getUserAvatar());
+            user.setCreatedDate(LocalDateTime.now());
 
             user = repository.save(user);
 
@@ -261,4 +265,36 @@ public class AuthenticationService {
         }
     }
 
+    /****************************** Statistics ********************************/
+    public Response<PostStatisticsDTO> getUserStatistics() {
+        try {
+            // Get the current time and time one week ago
+            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime oneWeekAgo = now.minus(1, ChronoUnit.WEEKS);
+
+            // Count the total posts
+            long totalPosts = repository.count();
+
+            // Count the posts created within the last week
+            long postsThisWeek = repository.countByCreatedDateBetween(oneWeekAgo, now);
+
+            // Count the posts created in the week before last
+            LocalDateTime twoWeeksAgo = now.minus(2, ChronoUnit.WEEKS);
+            long postsLastWeek = repository.countByCreatedDateBetween(twoWeeksAgo, oneWeekAgo);
+
+            // Calculate the percentage increase
+            double percentageIncrease = 0;
+            if (postsLastWeek > 0) {
+                percentageIncrease = ((double) (postsThisWeek - postsLastWeek) / postsLastWeek) * 100;
+            } else if (postsThisWeek > 0) {
+                percentageIncrease = 100;
+            }
+
+            // Create the DTO and return the response
+            PostStatisticsDTO statisticsDTO = new PostStatisticsDTO(totalPosts, percentageIncrease);
+            return new Response<>("success", statisticsDTO);
+        } catch (Exception e) {
+            return new Response<>("unsuccess", null);
+        }
+    }
 }

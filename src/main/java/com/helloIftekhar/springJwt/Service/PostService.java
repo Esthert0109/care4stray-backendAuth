@@ -14,7 +14,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -308,6 +311,38 @@ public class PostService {
             }
 
             return new Response<>("success", postDTOList);
+        } catch (Exception e) {
+            return new Response<>("unsuccess", null);
+        }
+    }
+
+    public Response<PostStatisticsDTO> getPostStatistics() {
+        try {
+            // Get the current time and time one week ago
+            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime oneWeekAgo = now.minus(1, ChronoUnit.WEEKS);
+
+            // Count the total posts
+            long totalPosts = postRepository.count();
+
+            // Count the posts created within the last week
+            long postsThisWeek = postRepository.countByCreatedDateBetween(oneWeekAgo, now);
+
+            // Count the posts created in the week before last
+            LocalDateTime twoWeeksAgo = now.minus(2, ChronoUnit.WEEKS);
+            long postsLastWeek = postRepository.countByCreatedDateBetween(twoWeeksAgo, oneWeekAgo);
+
+            // Calculate the percentage increase
+            double percentageIncrease = 0;
+            if (postsLastWeek > 0) {
+                percentageIncrease = ((double) (postsThisWeek - postsLastWeek) / postsLastWeek) * 100;
+            } else if (postsThisWeek > 0) {
+                percentageIncrease = 100;
+            }
+
+            // Create the DTO and return the response
+            PostStatisticsDTO statisticsDTO = new PostStatisticsDTO(totalPosts, percentageIncrease);
+            return new Response<>("success", statisticsDTO);
         } catch (Exception e) {
             return new Response<>("unsuccess", null);
         }

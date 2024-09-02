@@ -12,6 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 public class UserDTO {
@@ -32,6 +33,7 @@ public class UserDTO {
     private String city;
     private String state;
     private Occupation occupation;
+    private LocalDateTime createdDate;
 
     public UserDTO() {
     }
@@ -53,5 +55,6 @@ public class UserDTO {
         this.userStatus = user.getUserStatus();
         this.userAvatar = user.getUserAvatar();
         this.state = user.getState();
+        this.createdDate = user.getCreatedDate();
     }
 }
