@@ -189,33 +189,43 @@ public class PostService {
         }
     }
 
-    public Response<List<CreatedPostDTO>> getUserCreatedPostList(Integer userId) {
+    public Response<List<PostDTO>> getUserCreatedPostList(Integer userId) {
         try {
-            List<Post> postList = postRepository.findAllCreatedPostByUserId(Long.valueOf(userId));
-            List<CreatedPostDTO> createdPostDTOList = new ArrayList<>();
+            List<Post> postList = postRepository.findAllOwnCreatedPostByUserId(Long.valueOf(userId));
+            List<PostDTO> postDTOList = new ArrayList<>();
             User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found."));
 
             for (Post post : postList) {
-                CreatedPostDTO createdPostDTO = new CreatedPostDTO();
-                Boolean isLiked = likeRepository.existsByUserAndPost(user, post);
-                createdPostDTO.setPostId(post.getPostId());
-                createdPostDTO.setAuthor(new UserDTO(post.getUser()));
-                createdPostDTO.setContent(post.getContent());
-                createdPostDTO.setPicture(post.getPicture());
-                createdPostDTO.setIsLiked(isLiked);
-                createdPostDTO.setLikeCount(post.getLikeCount());
-                createdPostDTO.setCommentCount(post.getCommentCount());
-                createdPostDTO.setCreatedDate(post.getCreatedDate());
-                createdPostDTO.setDuration(newsService.formatDuration(post.getCreatedDate()));
+                // Create a PostDTO for each post
+                PostDTO postDTO = new PostDTO(post, likeRepository.existsByUserAndPost(user, post), newsService.formatDuration(post.getCreatedDate()));
 
-                createdPostDTOList.add(createdPostDTO);
+                // If the post has an associated Stray, add StrayDTO to PostDTO
+                if (post.getStray() != null) {
+                    Stray stray = post.getStray();
+                    StrayDTO strayDTO = new StrayDTO();
+                    strayDTO.setStrayId(stray.getStrayId());
+                    strayDTO.setCreatedDate(stray.getCreatedDate());
+                    strayDTO.setIsDewormed(stray.getIsDewormed());
+                    strayDTO.setIsVaccinated(stray.getIsVaccinated());
+                    strayDTO.setMainPicture(stray.getMainPicture());
+                    strayDTO.setPictureUrl(stray.getPictureUrl());
+                    strayDTO.setStatus(stray.getStatus());
+                    strayDTO.setName(stray.getName());
+                    strayDTO.setAge(stray.getAge());
+                    strayDTO.setBehaviour(stray.getBehaviour());
+;
+                    postDTO.setStrayPost(strayDTO);
+                }
+
+                postDTOList.add(postDTO);
             }
 
-            return new Response<>("success", createdPostDTOList);
+            return new Response<>("success", postDTOList);
         } catch (Exception e) {
             return new Response<>("unsuccess", null);
         }
     }
+
 
 
     public Response<LikedDTO> likeOrUnlikedPost(LikeDTO likeDTO) {

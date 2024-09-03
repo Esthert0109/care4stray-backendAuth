@@ -82,7 +82,7 @@ public class PostController {
     }
 
     @PostMapping("/create-list-user")
-    public ResponseEntity<Response<List<CreatedPostDTO>>> userCreatedPostList(@RequestBody Map<String, Integer> request) {
+    public ResponseEntity<Response<List<PostDTO>>> userCreatedPostList(@RequestBody Map<String, Integer> request) {
         Integer userId = request.get("userId");
         if (userId == null || userId == 0) {
             return ResponseEntity.badRequest().build();
