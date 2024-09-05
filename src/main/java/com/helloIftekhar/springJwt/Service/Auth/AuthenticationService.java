@@ -13,6 +13,7 @@ import com.helloIftekhar.springJwt.Repository.NewsRepository;
 import com.helloIftekhar.springJwt.Repository.TokenRepository;
 import com.helloIftekhar.springJwt.Repository.UserRepository;
 import com.helloIftekhar.springJwt.Utils.Enum.NewsStatus;
+import com.helloIftekhar.springJwt.Utils.Enum.Role;
 import com.helloIftekhar.springJwt.Utils.Enum.UserStatus;
 import com.helloIftekhar.springJwt.Utils.Responses.AuthenticationResponse;
 import com.helloIftekhar.springJwt.Utils.Responses.LoginResponse;
@@ -35,6 +36,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AuthenticationService {
@@ -207,15 +209,16 @@ public class AuthenticationService {
     public List<UserListDTO> getAllUserOrderByFirstName() {
         List<User> userList = repository.findAllByOrderByFirstNameAsc();
 
-        List<UserListDTO> userListDTOS = new ArrayList<>();
-
-        for (User user: userList){
-            boolean isAdopted = adoptionRepository.existsByUserAndAdoptionStatus_ApplicationSuccess(user);
-            int numAdopted = adoptionRepository.countAdoptionsByUserAndAdoptionStatus_ApplicationSuccess(user);
-
-            UserListDTO userInList = new UserListDTO(user, isAdopted, numAdopted);
-            userListDTOS.add(userInList);
-        }
+        // Apply the filters using the Stream API
+        List<UserListDTO> userListDTOS = userList.stream()
+                .filter(user -> !user.getUserStatus().equals(UserStatus.DEACTIVATED)) // Filter out deactivated users
+                .filter(user -> user.getRole().equals(Role.USER)) // Only include users with the role 'USER'
+                .map(user -> {
+                    boolean isAdopted = adoptionRepository.existsByUserAndAdoptionStatus_ApplicationSuccess(user);
+                    int numAdopted = adoptionRepository.countAdoptionsByUserAndAdoptionStatus_ApplicationSuccess(user);
+                    return new UserListDTO(user, isAdopted, numAdopted);
+                })
+                .collect(Collectors.toList());
 
         return userListDTOS;
 
