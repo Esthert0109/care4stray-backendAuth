@@ -51,6 +51,15 @@ public class DonationController {
         return ResponseEntity.ok(donationService.getDonationListByUserId(userId));
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<Response<List<DonationDTO>>> getAllDonation() {
+        try {
+            return ResponseEntity.ok(donationService.getAllUserViewDonationList());
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new Response<>("unsuccess", null));
+        }
+    }
+
     @PutMapping("/updateStatus/{id}")
     public ResponseEntity<Response<DonationDTO>> updateDonationStatus(@RequestBody Map<String, String> request, @PathVariable Long id) {
         if(request == null || id == null || request.get("donationStatus") == null) {

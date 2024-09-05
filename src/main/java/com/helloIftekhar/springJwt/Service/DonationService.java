@@ -88,6 +88,15 @@ public class DonationService {
         }
     }
 
+    public Response<List<DonationDTO>> getAllUserViewDonationList(){
+        try{
+            List<Donation> donationList= donationRepository.findAllByStatusOrderByUpdatedDateDesc(DonationStatus.SUCCESS);
+            return new Response<>("success", donationList.stream().map(donation-> new DonationDTO(donation)).toList());
+        }catch(Exception e){
+            return new Response<>("unsuccess", null);
+        }
+    }
+
     public Response<List<UserDTO>> getDonorList(){
         try{
             List<User> donorList = donationRepository.findAllUserByOrderByUpdatedDateDesc();

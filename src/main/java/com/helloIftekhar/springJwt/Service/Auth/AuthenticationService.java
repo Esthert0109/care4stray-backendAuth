@@ -17,6 +17,7 @@ import com.helloIftekhar.springJwt.Utils.Enum.UserStatus;
 import com.helloIftekhar.springJwt.Utils.Responses.AuthenticationResponse;
 import com.helloIftekhar.springJwt.Utils.Responses.LoginResponse;
 import com.helloIftekhar.springJwt.Utils.Responses.Response;
+import io.jsonwebtoken.Jwt;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
@@ -26,6 +27,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -47,7 +49,9 @@ public class AuthenticationService {
 
     private final NewsRepository newsRepo;
 
-    public AuthenticationService(UserRepository repository, PasswordEncoder passwordEncoder, JwtService jwtService, TokenRepository tokenRepository, AuthenticationManager authenticationManager, AdoptionRepository adoptionRepository, NewsRepository newsRepo) {
+    private final UserRepository userRepository;
+
+    public AuthenticationService(UserRepository repository, PasswordEncoder passwordEncoder, JwtService jwtService, TokenRepository tokenRepository, AuthenticationManager authenticationManager, AdoptionRepository adoptionRepository, NewsRepository newsRepo, UserRepository userRepository) {
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
@@ -55,6 +59,25 @@ public class AuthenticationService {
         this.authenticationManager = authenticationManager;
         this.adoptionRepository = adoptionRepository;
         this.newsRepo = newsRepo;
+        this.userRepository = userRepository;
+    }
+
+
+    public Response<Boolean> isValidTokenForUser(Long userId, String token) {
+        try {
+            // Fetch the user by userId
+            UserDetails user = userRepository.findById(Math.toIntExact(userId))
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            // Validate the token with the user
+            boolean isValid = jwtService.isValid(token, user);
+
+            // Return success response
+            return new Response<>("success", isValid);
+        } catch (RuntimeException e) {
+            // Handle user not found or any other exceptions and return failure response
+            return new Response<>("unsuccess", null);
+        }
     }
 
     /******************** User Service**************************************/
