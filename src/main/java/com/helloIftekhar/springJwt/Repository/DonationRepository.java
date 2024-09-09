@@ -20,6 +20,6 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
     @Query("SELECT d.user FROM Donation d WHERE d.isAnonymously = false ORDER BY d.updatedDate DESC")
     List<User> findAllUserByOrderByUpdatedDateDesc();
 
-    @Query("SELECT SUM(d.amount) FROM Donation d WHERE d.createdDate BETWEEN :startDate AND :endDate")
-    Double sumByCreatedDateBetween(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+    @Query("SELECT SUM(d.amount) FROM Donation d WHERE d.status = :status AND d.createdDate BETWEEN :startDate AND :endDate")
+    Double sumByCreatedDateBetweenAndStatus(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate, @Param("status") DonationStatus status);
 }

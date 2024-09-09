@@ -128,14 +128,14 @@ public class DonationService {
             LocalDateTime oneWeekAgo = now.minus(1, ChronoUnit.WEEKS);
 
             // Total amount of donations
-            Double totalAmount = donationRepository.sumByCreatedDateBetween(LocalDateTime.MIN, LocalDateTime.now());
+            Double totalAmount = donationRepository.sumByCreatedDateBetweenAndStatus(LocalDateTime.MIN, LocalDateTime.now(), DonationStatus.SUCCESS);
 
             // Amount of donations in the last week
-            Double amountThisWeek = donationRepository.sumByCreatedDateBetween(oneWeekAgo, now);
+            Double amountThisWeek = donationRepository.sumByCreatedDateBetweenAndStatus(oneWeekAgo, now, DonationStatus.SUCCESS);
 
             // Amount of donations in the week before last
             LocalDateTime twoWeeksAgo = now.minus(2, ChronoUnit.WEEKS);
-            Double amountLastWeek = donationRepository.sumByCreatedDateBetween(twoWeeksAgo, oneWeekAgo);
+            Double amountLastWeek = donationRepository.sumByCreatedDateBetweenAndStatus(twoWeeksAgo, oneWeekAgo, DonationStatus.SUCCESS);
 
             // Calculate percentage increase
             double percentageIncrease = 0;
