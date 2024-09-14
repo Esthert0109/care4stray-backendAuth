@@ -1,5 +1,7 @@
 package com.helloIftekhar.springJwt.Bean;
 
+import com.helloIftekhar.springJwt.DTO.CreateCommentDTO;
+import com.helloIftekhar.springJwt.DTO.CreatedCommentDTO;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -27,4 +29,15 @@ public class Comment {
 
     @Column(name = "created_time", nullable = false)
     private LocalDateTime createdTime;
+
+    public Comment() {
+    }
+
+    public Comment(CreateCommentDTO comment) {
+        this.commentId = comment.getCommentId();
+        this.user = new User(comment.getUser());
+        this.post = new Post(comment.getPost());
+        this.comment = comment.getComment();
+        this.createdTime = LocalDateTime.now();
+    }
 }

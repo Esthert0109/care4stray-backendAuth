@@ -1,16 +1,22 @@
 package com.helloIftekhar.springJwt.Service;
 
 import com.helloIftekhar.springJwt.Bean.Adoption;
+import com.helloIftekhar.springJwt.Bean.Notification;
 import com.helloIftekhar.springJwt.Bean.Stray;
 import com.helloIftekhar.springJwt.Bean.User;
 import com.helloIftekhar.springJwt.DTO.AdoptionApplicationDTO;
+import com.helloIftekhar.springJwt.DTO.NotificationDTO;
 import com.helloIftekhar.springJwt.DTO.StrayDTO;
+import com.helloIftekhar.springJwt.DTO.UserDTO;
 import com.helloIftekhar.springJwt.Repository.AdoptionRepository;
 import com.helloIftekhar.springJwt.Repository.StrayRepository;
 import com.helloIftekhar.springJwt.Repository.UserRepository;
 import com.helloIftekhar.springJwt.Service.Auth.AuthenticationService;
 import com.helloIftekhar.springJwt.Utils.Enum.AdoptionStatus;
+import com.helloIftekhar.springJwt.Utils.Enum.NotificationType;
+import com.helloIftekhar.springJwt.Utils.Enum.Role;
 import com.helloIftekhar.springJwt.Utils.Enum.StrayStatus;
+import com.helloIftekhar.springJwt.Utils.NotificationMessagesConstants;
 import com.helloIftekhar.springJwt.Utils.Responses.Response;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +43,9 @@ public class AdoptionService {
     @Autowired
     private StrayService strayService;
 
+    @Autowired
+    private NotificationService notificationService;
+
     public Response<AdoptionApplicationDTO> createAdoptionApplication(AdoptionApplicationDTO adoptionApplicationDTO, HttpServletRequest requestHeader) {
         try {
             User appliedUser = new User(adoptionApplicationDTO.getUser());
@@ -61,6 +70,18 @@ public class AdoptionService {
             adoptionRepository.save(adoptionApplication);
 
             AdoptionApplicationDTO applicationResponse = new AdoptionApplicationDTO(adoptionApplication);
+
+//            Notification for admin
+            NotificationDTO createNotification = new NotificationDTO();
+            createNotification.setAdoption(applicationResponse);
+            createNotification.setNotificationType(NotificationType.ADOPTION);
+            UserDTO receiver = new UserDTO();
+            receiver.setId(1);
+            receiver.setRole(Role.ADMIN);
+            createNotification.setReceiver(receiver);
+            createNotification.setSender(new UserDTO(updatedUser));
+            createNotification.setMessage(NotificationMessagesConstants.ADMIN_ADOPTION_REQUEST_NOTIFICATION_MESSAGE);
+            notificationService.createNotification(createNotification);
 
             return new Response<>("success", applicationResponse);
 
@@ -116,6 +137,19 @@ public class AdoptionService {
             strayRepository.save(selectedStray);
 
             AdoptionApplicationDTO savedAdoption = new AdoptionApplicationDTO(adoptionApplication);
+
+//            User Notification
+            NotificationDTO createNotification = new NotificationDTO();
+            createNotification.setAdoption(savedAdoption);
+            createNotification.setNotificationType(NotificationType.ADOPTION);
+            createNotification.setReceiver(new UserDTO(adoptionApplication.getUser()));
+            UserDTO sender = new UserDTO();
+            sender.setId(1);
+            sender.setRole(Role.ADMIN);
+            createNotification.setSender(sender);
+            createNotification.setMessage(NotificationMessagesConstants.USER_ADOPTION_UPDATE_NOTIFICATION_MESSAGE);
+            notificationService.createNotification(createNotification);
+
             return new Response<>("success", savedAdoption);
         } catch (RuntimeException e) {
             return new Response<>("unsuccess", null);
@@ -140,6 +174,18 @@ public class AdoptionService {
             adoptionRepository.save(adoptionApplication);
             AdoptionApplicationDTO applicationResponse = new AdoptionApplicationDTO(adoptionApplication);
 
+//            Admin Notification
+            NotificationDTO createNotification = new NotificationDTO();
+            createNotification.setAdoption(applicationResponse);
+            createNotification.setNotificationType(NotificationType.ADOPTION);
+            UserDTO receiver = new UserDTO();
+            receiver.setId(1);
+            receiver.setRole(Role.ADMIN);
+            createNotification.setReceiver(receiver);
+            createNotification.setSender(new UserDTO(appliedUser));
+            createNotification.setMessage(NotificationMessagesConstants.ADMIN_ADOPTION_EDIT_NOTIFICATION_MESSAGE);
+            notificationService.createNotification(createNotification);
+
             return new Response<>("success", applicationResponse);
         }catch (RuntimeException e) {
             return new Response<>("unsuccess", null);
@@ -156,6 +202,19 @@ public class AdoptionService {
                 strayRepository.save(selectedStray);
 
                 adoptionRepository.delete(selectedAdoption);
+
+//                admin notification
+                NotificationDTO createNotification = new NotificationDTO();
+                createNotification.setAdoption(new AdoptionApplicationDTO(selectedAdoption));
+                createNotification.setNotificationType(NotificationType.ADOPTION);
+                UserDTO receiver = new UserDTO();
+                receiver.setId(1);
+                receiver.setRole(Role.ADMIN);
+                createNotification.setReceiver(receiver);
+                createNotification.setSender(new UserDTO(selectedAdoption.getUser()));
+                createNotification.setMessage(NotificationMessagesConstants.ADMIN_ADOPTION_CANCEL_NOTIFICATION_MESSAGE);
+                notificationService.createNotification(createNotification);
+
                 return new Response<>("success", "Adoption canceled");
             }else{
                 return new Response<>("unsuccess", "Adoption not found");

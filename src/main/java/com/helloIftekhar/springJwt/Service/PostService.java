@@ -6,9 +6,11 @@ import com.helloIftekhar.springJwt.Repository.CommentRepository;
 import com.helloIftekhar.springJwt.Repository.LikeRepository;
 import com.helloIftekhar.springJwt.Repository.PostRepository;
 import com.helloIftekhar.springJwt.Repository.UserRepository;
+import com.helloIftekhar.springJwt.Utils.Enum.NotificationType;
 import com.helloIftekhar.springJwt.Utils.Enum.StrayStatus;
 import com.helloIftekhar.springJwt.Repository.*;
 import com.helloIftekhar.springJwt.Service.Auth.AuthenticationService;
+import com.helloIftekhar.springJwt.Utils.NotificationMessagesConstants;
 import com.helloIftekhar.springJwt.Utils.Responses.Response;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +45,9 @@ public class PostService {
 
     @Autowired
     private AuthenticationService authenticationService;
+
+    @Autowired
+    private NotificationService notificationService;
 
     public void createAdoptionPost(Stray stray) {
         Post adoptionPost = new Post();
@@ -256,6 +261,16 @@ public class PostService {
                 postRepository.save(post);
 
                 LikedDTO likedDTO = new LikedDTO(likePost, true);
+
+//                User Notification
+                NotificationDTO createNotification = new NotificationDTO();
+                createNotification.setNotificationType(NotificationType.POST);
+                createNotification.setReceiver(new UserDTO(likePost.getPost().getUser()));
+                createNotification.setSender(new UserDTO(likePost.getUser()));
+                createNotification.setLike(likePost);
+                createNotification.setMessage(NotificationMessagesConstants.USER_POST_LIKED_NOTIFICATION_MESSAGE);
+                notificationService.createNotification(createNotification);
+
                 return new Response<>("success", likedDTO);
             }
         } catch (Exception e) {
@@ -279,6 +294,17 @@ public class PostService {
             postRepository.save(post);
 
             CreatedCommentDTO createdCommentDTO = new CreatedCommentDTO(newComment);
+
+
+//            User Notification
+            NotificationDTO createNotification = new NotificationDTO();
+            createNotification.setNotificationType(NotificationType.POST);
+            createNotification.setReceiver(new UserDTO(post.getUser()));
+            createNotification.setSender(new UserDTO(user));
+            createNotification.setComment(createdCommentDTO);
+            createNotification.setMessage(NotificationMessagesConstants.USER_POST_COMMENTED_NOTIFICATION_MESSAGE);
+            notificationService.createNotification(createNotification);
+
             return new Response<>("success", createdCommentDTO);
         } catch (Exception e) {
             return new Response<>("unsuccess", null);
