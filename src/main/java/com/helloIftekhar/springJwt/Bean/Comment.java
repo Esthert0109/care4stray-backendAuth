@@ -40,4 +40,6 @@ public class Comment {
         this.comment = comment.getComment();
         this.createdTime = LocalDateTime.now();
     }
+
+
 }

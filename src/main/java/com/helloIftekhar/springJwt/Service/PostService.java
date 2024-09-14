@@ -301,7 +301,7 @@ public class PostService {
             createNotification.setNotificationType(NotificationType.POST);
             createNotification.setReceiver(new UserDTO(post.getUser()));
             createNotification.setSender(new UserDTO(user));
-            createNotification.setComment(createdCommentDTO);
+            createNotification.setComment(new CreateCommentDTO(newComment));
             createNotification.setMessage(NotificationMessagesConstants.USER_POST_COMMENTED_NOTIFICATION_MESSAGE);
             notificationService.createNotification(createNotification);
 

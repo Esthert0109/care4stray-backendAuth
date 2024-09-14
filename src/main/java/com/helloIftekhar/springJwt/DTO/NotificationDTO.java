@@ -10,7 +10,7 @@ public class NotificationDTO {
     private NotificationType notificationType;
     private UserDTO receiver;
     private UserDTO sender;
-    private CreatedCommentDTO comment;
+    private CreateCommentDTO comment;
     private Like like;
     private AdoptionApplicationDTO adoption;
     private String message;

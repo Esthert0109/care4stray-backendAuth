@@ -1,5 +1,6 @@
 package com.helloIftekhar.springJwt.DTO;
 
+import com.helloIftekhar.springJwt.Bean.Comment;
 import lombok.Data;
 
 @Data
@@ -11,5 +12,12 @@ public class CreateCommentDTO {
 
 
     public CreateCommentDTO() {
+    }
+
+    public CreateCommentDTO(Comment comment) {
+        this.commentId = comment.getCommentId();
+        this.user = new UserDTO(comment.getUser());
+        this.post = new PostDTO(comment.getPost(), true, "0");
+        this.comment = comment.getComment();
     }
 }
