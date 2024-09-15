@@ -53,7 +53,11 @@ public class Post {
         this.postId = post.getPostId();
         this.user = new User(post.getAuthor());
         this.isAdoption = post.getIsAdoption();
-        this.stray = new Stray(post.getStrayPost(), new User(post.getAuthor()));
+        if (post.getStrayPost() != null) {
+            this.stray = new Stray(post.getStrayPost(), new User(post.getAuthor()));
+        } else {
+            this.stray = null; // Handle this appropriately
+        }
         this.content = post.getContent();
         this.picture = post.getPicture();
         this.likeCount = post.getLikeCount();

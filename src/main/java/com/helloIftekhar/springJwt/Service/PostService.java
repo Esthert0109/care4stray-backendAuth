@@ -268,7 +268,12 @@ public class PostService {
                 createNotification.setReceiver(new UserDTO(likePost.getPost().getUser()));
                 createNotification.setSender(new UserDTO(likePost.getUser()));
                 createNotification.setLike(likePost);
-                createNotification.setMessage(NotificationMessagesConstants.USER_POST_LIKED_NOTIFICATION_MESSAGE);
+//                createNotification.setMessage(NotificationMessagesConstants.USER_POST_LIKED_NOTIFICATION_MESSAGE);
+
+                // Manually add dynamic message without changing NotificationMessagesConstants
+                String message = user.getUsername() + NotificationMessagesConstants.USER_POST_LIKED_NOTIFICATION_MESSAGE;
+                createNotification.setMessage(message);
+
                 notificationService.createNotification(createNotification);
 
                 return new Response<>("success", likedDTO);
@@ -302,7 +307,12 @@ public class PostService {
             createNotification.setReceiver(new UserDTO(post.getUser()));
             createNotification.setSender(new UserDTO(user));
             createNotification.setComment(new CreateCommentDTO(newComment));
-            createNotification.setMessage(NotificationMessagesConstants.USER_POST_COMMENTED_NOTIFICATION_MESSAGE);
+//            createNotification.setMessage(NotificationMessagesConstants.USER_POST_COMMENTED_NOTIFICATION_MESSAGE);
+
+            // Manually add dynamic message without changing NotificationMessagesConstants
+            String message = user.getUsername() + NotificationMessagesConstants.USER_POST_COMMENTED_NOTIFICATION_MESSAGE;
+            createNotification.setMessage(message);
+
             notificationService.createNotification(createNotification);
 
             return new Response<>("success", createdCommentDTO);

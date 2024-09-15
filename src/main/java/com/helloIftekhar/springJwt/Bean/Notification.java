@@ -54,6 +54,12 @@ public class Notification {
         this.notificationType = notification.getNotificationType();
         this.receiver = new User(notification.getReceiver());
         this.sender = new User(notification.getSender());
-        this.comment = new Comment(notification.getComment());
+        if (notification.getComment() != null) {
+            this.comment = new Comment(notification.getComment());
+        }
+        if (notification.getLike() != null) {
+            this.liked = notification.getLike();
+        }
+        this.message = notification.getMessage();
     }
 }

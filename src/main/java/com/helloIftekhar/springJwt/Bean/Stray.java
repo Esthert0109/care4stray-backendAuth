@@ -65,6 +65,9 @@ public class Stray {
     }
 
     public Stray(StrayDTO strayDTO, User user) {
+        if (strayDTO == null) {
+            throw new IllegalArgumentException("StrayDTO cannot be null");
+        }
         this.strayId = strayDTO.getStrayId();
         this.user = user;
         this.name = strayDTO.getName();
