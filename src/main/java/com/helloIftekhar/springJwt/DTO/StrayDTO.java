@@ -37,6 +37,8 @@ public class StrayDTO {
 
     private LocalDateTime updatedDate;
 
+    private boolean hasAdoptionApplication;
+
     public StrayDTO() {}
 
     public StrayDTO(Stray stray) {
@@ -53,6 +55,13 @@ public class StrayDTO {
         this.status = stray.getStatus();
         this.createdDate = stray.getCreatedDate();
         this.updatedDate = stray.getUpdatedDate();
+    }
+
+    public StrayDTO(Stray stray, boolean hasAdoptionApplication) {
+        this.strayId = stray.getStrayId();
+        this.name = stray.getName();
+        this.status = stray.getStatus();
+        this.hasAdoptionApplication = hasAdoptionApplication;
     }
 
 }

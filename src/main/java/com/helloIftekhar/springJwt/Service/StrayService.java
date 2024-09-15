@@ -4,6 +4,7 @@ import com.helloIftekhar.springJwt.Bean.Post;
 import com.helloIftekhar.springJwt.Bean.Stray;
 import com.helloIftekhar.springJwt.Bean.User;
 import com.helloIftekhar.springJwt.DTO.StrayDTO;
+import com.helloIftekhar.springJwt.Repository.AdoptionRepository;
 import com.helloIftekhar.springJwt.Repository.PostRepository;
 import com.helloIftekhar.springJwt.Repository.StrayRepository;
 import com.helloIftekhar.springJwt.Repository.UserRepository;
@@ -28,6 +29,9 @@ public class StrayService {
 
     @Autowired
     private PostService postService;
+
+    @Autowired
+    private AdoptionRepository adoptionRepository;
 
     public Response<StrayDTO> createStray(StrayDTO strayDTO) {
         try {
@@ -58,10 +62,17 @@ public class StrayService {
 
     public Response<String> deleteStray(StrayDTO strayDTO) {
         try{
-            Post relatedPost = postRepository.findPostByStray_StrayId(strayDTO.getStrayId());
-            postRepository.delete(relatedPost);
+//            Post relatedPost = postRepository.findPostByStray_StrayId(strayDTO.getStrayId());
+//            postRepository.delete(relatedPost);
+//            Stray selectedStray = strayRepository.findById(strayDTO.getStrayId()).orElseThrow(() -> new RuntimeException("Stray not found"));
+//            strayRepository.delete(selectedStray);
+//
+//            return new Response<>("success", "Stray deleted successfully");
+
             Stray selectedStray = strayRepository.findById(strayDTO.getStrayId()).orElseThrow(() -> new RuntimeException("Stray not found"));
-            strayRepository.delete(selectedStray);
+            selectedStray.setStatus(StrayStatus.REMOVED);
+            selectedStray.setUpdatedDate(LocalDateTime.now());
+            strayRepository.save(selectedStray);
 
             return new Response<>("success", "Stray deleted successfully");
         }catch(Exception e){
@@ -71,8 +82,15 @@ public class StrayService {
 
     public Response<List<StrayDTO>> getAllStrays() {
         try {
-            List<Stray> strays = strayRepository.findAllByOrderByUpdatedDateDesc();
-            return new Response<>("success", strays.stream().map(stray -> new StrayDTO(stray)).toList());
+            List<Stray> strays = strayRepository.findAllByStatusNotOrderByUpdatedDateDesc(StrayStatus.REMOVED);
+
+            // Map each Stray entity to StrayDTO and check if it has an adoption application
+            List<StrayDTO> strayDTOs = strays.stream().map(stray -> {
+                boolean hasAdoptionApplication = adoptionRepository.existsByStray(stray);
+                return new StrayDTO(stray, hasAdoptionApplication);
+            }).toList();
+
+            return new Response<>("success", strayDTOs);
         } catch (Exception e) {
             return new Response<>("unsuccess", null);
 

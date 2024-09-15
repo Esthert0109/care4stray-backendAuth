@@ -1,6 +1,7 @@
 package com.helloIftekhar.springJwt.Repository;
 
 import com.helloIftekhar.springJwt.Bean.Adoption;
+import com.helloIftekhar.springJwt.Bean.Stray;
 import com.helloIftekhar.springJwt.Bean.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -20,4 +21,7 @@ public interface AdoptionRepository extends JpaRepository<Adoption, Long> {
 
     @Query("SELECT COUNT(a) FROM Adoption a WHERE a.user = :user AND a.adoptionStatus = 'APPLICATION_SUCCESS'")
     int countAdoptionsByUserAndAdoptionStatus_ApplicationSuccess(User user);
+
+    boolean existsByStray(Stray stray);
+
 }
