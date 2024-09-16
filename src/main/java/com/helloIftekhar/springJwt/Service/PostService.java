@@ -267,7 +267,7 @@ public class PostService {
                 createNotification.setNotificationType(NotificationType.POST);
                 createNotification.setReceiver(new UserDTO(likePost.getPost().getUser()));
                 createNotification.setSender(new UserDTO(likePost.getUser()));
-                createNotification.setLike(likePost);
+                createNotification.setLike(new LikeDTO(likePost));
                 createNotification.setMessage(NotificationMessagesConstants.USER_POST_LIKED_NOTIFICATION_MESSAGE);
 
                 // Manually add dynamic message without changing NotificationMessagesConstants

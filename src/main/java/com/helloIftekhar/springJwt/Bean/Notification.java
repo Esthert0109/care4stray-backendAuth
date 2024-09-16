@@ -58,7 +58,7 @@ public class Notification {
             this.comment = new Comment(notification.getComment());
         }
         if (notification.getLike() != null) {
-            this.liked = notification.getLike();
+            this.liked = new Like(notification.getLike());
         }
         this.message = notification.getMessage();
     }

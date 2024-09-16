@@ -12,4 +12,9 @@ public class LikeDTO {
     public LikeDTO() {
     }
 
+    public LikeDTO(Like like) {
+        this.id = like.getId();
+        this.user = new UserDTO(like.getUser());
+        this.post = new PostDTO(like.getPost(), true, "");
+    }
 }

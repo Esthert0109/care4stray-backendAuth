@@ -11,7 +11,7 @@ public class NotificationDTO {
     private UserDTO receiver;
     private UserDTO sender;
     private CreateCommentDTO comment;
-    private Like like;
+    private LikeDTO like;
     private AdoptionApplicationDTO adoption;
     private String message;
 
@@ -28,7 +28,7 @@ public class NotificationDTO {
             this.comment = new CreateCommentDTO(notification.getComment());  // Mapping Comment to CreateCommentDTO
         }
         if (notification.getLiked() != null) {
-            this.like = notification.getLiked();  // Mapping Like entity directly
+            this.like = new LikeDTO(notification.getLiked());  // Mapping Like entity directly
         }
         if (notification.getAdoption() != null) {
             this.adoption = new AdoptionApplicationDTO(notification.getAdoption());  // Mapping AdoptionApplication
