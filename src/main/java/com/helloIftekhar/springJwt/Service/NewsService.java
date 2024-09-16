@@ -1,10 +1,15 @@
 package com.helloIftekhar.springJwt.Service;
 
 import com.helloIftekhar.springJwt.Bean.News;
+import com.helloIftekhar.springJwt.Bean.Token;
+import com.helloIftekhar.springJwt.Bean.User;
 import com.helloIftekhar.springJwt.DTO.NewsDTO;
 import com.helloIftekhar.springJwt.Repository.NewsRepository;
+import com.helloIftekhar.springJwt.Repository.TokenRepository;
+import com.helloIftekhar.springJwt.Service.Auth.AuthenticationService;
 import com.helloIftekhar.springJwt.Utils.Enum.NewsStatus;
 import com.helloIftekhar.springJwt.Utils.Responses.Response;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +23,12 @@ import java.util.stream.Collectors;
 public class NewsService {
     @Autowired
     NewsRepository newsRepository;
+
+    @Autowired
+    TokenRepository tokenRepository;
+
+    @Autowired
+    AuthenticationService authenticationService;
 
     public String formatDuration(LocalDateTime inputDate) {
         try {
@@ -49,8 +60,15 @@ public class NewsService {
         }
     }
 
-    public Response<NewsDTO> createNews(News request) {
+    public Response<NewsDTO> createNews(News request, HttpServletRequest header) {
         try {
+            String token = authenticationService.extractTokenFromHeader(header);
+            if(token == null || token == ""){
+                return new Response<>("unsuccess", null);
+            }
+            Token selectedToken = tokenRepository.findByAccessToken(token).orElseThrow(() -> new RuntimeException("Token not found."));
+            User user = selectedToken.getUser();
+
             News news = new News();
             news.setTitle(request.getTitle());
             news.setContent(request.getContent());
@@ -59,6 +77,7 @@ public class NewsService {
             news.setStatus(NewsStatus.ACTIVE);
             news.setCreatedDate(LocalDateTime.now());
             news.setUpdatedDate(news.getCreatedDate());
+            news.setCreatedBy(user);
 
             news = newsRepository.save(news);
 

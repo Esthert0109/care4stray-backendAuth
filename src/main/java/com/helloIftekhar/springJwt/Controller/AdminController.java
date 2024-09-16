@@ -11,6 +11,7 @@ import com.helloIftekhar.springJwt.Utils.Enum.NewsStatus;
 import com.helloIftekhar.springJwt.Utils.Enum.StrayStatus;
 import com.helloIftekhar.springJwt.Utils.Enum.UserStatus;
 import com.helloIftekhar.springJwt.Utils.Responses.Response;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -114,11 +115,11 @@ public class AdminController {
     }
 
     @PostMapping("/news")
-    public ResponseEntity<Response<NewsDTO>> createNews(@RequestBody News request) {
+    public ResponseEntity<Response<NewsDTO>> createNews(@RequestBody News request, HttpServletRequest header) {
         if (request == null) {
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok(newsService.createNews(request));
+        return ResponseEntity.ok(newsService.createNews(request,header));
     }
 
     @PatchMapping("/news/update")

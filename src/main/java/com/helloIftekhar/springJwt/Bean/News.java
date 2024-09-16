@@ -44,6 +44,10 @@ public class News {
     @Column(name = "duration")
     private String duration;
 
+    @ManyToOne
+    @JoinColumn(name = "created_by")
+    private User createdBy;
+
     public News() {
 
     }
@@ -58,6 +62,7 @@ public class News {
         this.createdDate = newsDTO.getCreatedDate();
         this.updatedDate = newsDTO.getUpdatedDate();
         this.duration = newsDTO.getDuration();
+        this.createdBy = new User(newsDTO.getCreatedBy());
     }
 
     @PrePersist

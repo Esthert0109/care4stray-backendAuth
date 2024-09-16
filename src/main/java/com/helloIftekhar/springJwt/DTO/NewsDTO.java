@@ -20,6 +20,7 @@ public class NewsDTO {
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
     private String duration;
+    private UserDTO createdBy;
 
     public NewsDTO() {
 
