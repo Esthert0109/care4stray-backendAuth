@@ -19,7 +19,7 @@ public class Adoption {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "stray_id", nullable = false)
     private Stray stray;
 
