@@ -42,7 +42,7 @@ public class NotificationService {
 
     public Response<List<NotificationDTO>> getUserNotifications(Long userId) {
         try {
-            List<Notification> notifications = notificationRepository.findByReceiverId(userId);
+            List<Notification> notifications = notificationRepository.findByReceiverIdAndSenderNotReceiver(userId);
             List<NotificationDTO> notificationDTOs = notifications.stream()
                     .map(notification -> new NotificationDTO(notification)) // Assuming you have a constructor that accepts Notification
                     .collect(Collectors.toList());

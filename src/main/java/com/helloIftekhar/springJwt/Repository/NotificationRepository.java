@@ -7,7 +7,11 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
-    List<Notification> findByReceiverId(Long receiverId);
+//    List<Notification> findByReceiverId(Long receiverId);
+
+    // Find notifications by receiverId where senderId does not match receiverId
+    @Query("SELECT n FROM Notification n WHERE n.receiver.id = :receiverId AND n.sender.id != :receiverId")
+    List<Notification> findByReceiverIdAndSenderNotReceiver(Long receiverId);
 
 //    @Query("")
 //    List<Notification> findByNotificationTypeAdmin();

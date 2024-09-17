@@ -15,6 +15,7 @@ public class NotificationDTO {
     private AdoptionApplicationDTO adoption;
     private String message;
 
+
     // Default no-args constructor
     public NotificationDTO() {}
 

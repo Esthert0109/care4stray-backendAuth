@@ -1,5 +1,6 @@
 package com.helloIftekhar.springJwt.DTO;
 
+import com.helloIftekhar.springJwt.Bean.Adoption;
 import com.helloIftekhar.springJwt.Bean.Post;
 import lombok.Data;
 
