@@ -59,8 +59,18 @@ public class StrayDTO {
 
     public StrayDTO(Stray stray, boolean hasAdoptionApplication) {
         this.strayId = stray.getStrayId();
+        this.user = new UserDTO(stray.getUser());
         this.name = stray.getName();
+        this.age = stray.getAge();
+        this.gender = stray.getGender();
+        this.behaviour = stray.getBehaviour();
+        this.mainPicture = stray.getMainPicture();
+        this.pictureUrl = stray.getPictureUrl();
+        this.isVaccinated = stray.getIsVaccinated();
+        this.isDewormed = stray.getIsDewormed();
         this.status = stray.getStatus();
+        this.createdDate = stray.getCreatedDate();
+        this.updatedDate = stray.getUpdatedDate();
         this.hasAdoptionApplication = hasAdoptionApplication;
     }
 

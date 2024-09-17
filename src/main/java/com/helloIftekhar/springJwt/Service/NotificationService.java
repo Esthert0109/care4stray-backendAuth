@@ -44,7 +44,7 @@ public class NotificationService {
 
     public Response<List<NotificationDTO>> getUserNotifications(Long userId) {
         try {
-            List<Notification> notifications = notificationRepository.findByReceiverIdAndSenderNotReceiver(userId);
+            List<Notification> notifications = notificationRepository.findByReceiverIdAndSenderNotReceiverOrderByCreatedDateDesc(userId);
             List<NotificationDTO> notificationDTOs = notifications.stream()
                     .map(notification -> new NotificationDTO(notification, newsService.formatDuration(notification.getCreateDate()))) // Assuming you have a constructor that accepts Notification
                     .collect(Collectors.toList());
