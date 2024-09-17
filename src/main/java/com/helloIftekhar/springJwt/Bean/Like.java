@@ -1,6 +1,7 @@
 package com.helloIftekhar.springJwt.Bean;
 
 import com.helloIftekhar.springJwt.DTO.LikeDTO;
+import com.helloIftekhar.springJwt.Utils.Enum.LikeStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -22,6 +23,10 @@ public class Like {
     @ManyToOne
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
+
+    @Column(name = "like_status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private LikeStatus likeStatus;
 
     @Column(name = "created_date", nullable = false)
     private LocalDateTime createdDate;

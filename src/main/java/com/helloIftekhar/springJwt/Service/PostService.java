@@ -6,6 +6,7 @@ import com.helloIftekhar.springJwt.Repository.CommentRepository;
 import com.helloIftekhar.springJwt.Repository.LikeRepository;
 import com.helloIftekhar.springJwt.Repository.PostRepository;
 import com.helloIftekhar.springJwt.Repository.UserRepository;
+import com.helloIftekhar.springJwt.Utils.Enum.LikeStatus;
 import com.helloIftekhar.springJwt.Utils.Enum.NotificationType;
 import com.helloIftekhar.springJwt.Utils.Enum.StrayStatus;
 import com.helloIftekhar.springJwt.Repository.*;
@@ -240,8 +241,9 @@ public class PostService {
             Boolean isLiked = likeRepository.existsByUserAndPost(user, post);
             if (isLiked) {
                 Like createdLike = likeRepository.findByUserAndPost(user, post);
-                likeRepository.deleteById(createdLike.getId());
-
+//                likeRepository.deleteById(createdLike.getId());
+                createdLike.setLikeStatus(LikeStatus.UNLIKE);
+                likeRepository.save(createdLike);
                 post.setLikeCount(post.getLikeCount() - 1);
                 postRepository.save(post);
 
@@ -254,6 +256,7 @@ public class PostService {
                 likePost.setPost(post);
                 likePost.setCreatedDate(LocalDateTime.now());
                 likePost.setUpdatedDate(likePost.getCreatedDate());
+                likePost.setLikeStatus(LikeStatus.LIKE);
 
                 likeRepository.save(likePost);
 

@@ -1,6 +1,7 @@
 package com.helloIftekhar.springJwt.DTO;
 
 import com.helloIftekhar.springJwt.Bean.Like;
+import com.helloIftekhar.springJwt.Utils.Enum.LikeStatus;
 import lombok.Data;
 
 @Data
