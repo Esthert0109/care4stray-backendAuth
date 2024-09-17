@@ -9,15 +9,15 @@ public class LikedDTO {
     private Long id;
     private Long postId;
     private Integer likedUserId;
-    private Boolean isLiked;
+    private LikeStatus isLiked;
 
     public LikedDTO() {
     }
 
-    public LikedDTO(Like like, Boolean isLiked) {
+    public LikedDTO(Like like) {
         this.id = like.getId();
         this.postId = like.getPost().getPostId();
         this.likedUserId = like.getUser().getId();
-        this.isLiked = isLiked;
+        this.isLiked = like.getLikeStatus();
     }
 }

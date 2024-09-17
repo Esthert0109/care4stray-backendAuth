@@ -2,23 +2,17 @@ package com.helloIftekhar.springJwt.Service;
 
 import com.helloIftekhar.springJwt.Bean.*;
 import com.helloIftekhar.springJwt.DTO.*;
-import com.helloIftekhar.springJwt.Repository.CommentRepository;
-import com.helloIftekhar.springJwt.Repository.LikeRepository;
-import com.helloIftekhar.springJwt.Repository.PostRepository;
-import com.helloIftekhar.springJwt.Repository.UserRepository;
+import com.helloIftekhar.springJwt.Repository.*;
+import com.helloIftekhar.springJwt.Service.Auth.AuthenticationService;
 import com.helloIftekhar.springJwt.Utils.Enum.LikeStatus;
 import com.helloIftekhar.springJwt.Utils.Enum.NotificationType;
 import com.helloIftekhar.springJwt.Utils.Enum.StrayStatus;
-import com.helloIftekhar.springJwt.Repository.*;
-import com.helloIftekhar.springJwt.Service.Auth.AuthenticationService;
 import com.helloIftekhar.springJwt.Utils.NotificationMessagesConstants;
 import com.helloIftekhar.springJwt.Utils.Responses.Response;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -73,7 +67,7 @@ public class PostService {
             newPost.setCreatedDate(LocalDateTime.now());
 
             postRepository.save(newPost);
-            CreatedPostDTO createdPostDTO = new CreatedPostDTO(newPost, false);
+            CreatedPostDTO createdPostDTO = new CreatedPostDTO(newPost, LikeStatus.UNLIKE);
             return new Response<>("success", createdPostDTO);
         } catch (Exception e) {
             return new Response<>("unsuccess", null);
@@ -84,10 +78,11 @@ public class PostService {
         try {
             Post post = postRepository.findPostByPostId(postId);
             User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found."));
-            Boolean isLiked = likeRepository.existsByUserAndPost(user, post);
+            Like like = likeRepository.findByUserAndPost(user, post);
+//            Boolean isLiked = likeRepository.existsByUserAndPost(user, post);
             String duration = newsService.formatDuration(post.getCreatedDate());
 
-            PostDTO createdPostDTO = new PostDTO(post, isLiked, duration);
+            PostDTO createdPostDTO = new PostDTO(post, like.getLikeStatus(), duration);
 
             return new Response<>("success", createdPostDTO);
         } catch (Exception e) {
@@ -136,12 +131,13 @@ public class PostService {
 
             for (Post post : postList) {
                 CreatedPostDTO createdPostDTO = new CreatedPostDTO();
-                Boolean isLiked = likeRepository.existsByUserAndPost(user, post);
+//                Boolean isLiked = likeRepository.existsByUserAndPost(user, post);
+                Like like = likeRepository.findByUserAndPost(user, post);
                 createdPostDTO.setPostId(post.getPostId());
                 createdPostDTO.setAuthor(new UserDTO(post.getUser()));
                 createdPostDTO.setContent(post.getContent());
                 createdPostDTO.setPicture(post.getPicture());
-                createdPostDTO.setIsLiked(isLiked);
+                createdPostDTO.setIsLiked(like.getLikeStatus());
                 createdPostDTO.setLikeCount(post.getLikeCount());
                 createdPostDTO.setCommentCount(post.getCommentCount());
                 createdPostDTO.setCreatedDate(post.getCreatedDate());
@@ -171,13 +167,14 @@ public class PostService {
                 List<Post> postList = postRepository.findAllNearPost(userState);
                 List<CreatedPostDTO> createdPostDTOList = new ArrayList<>();
                 for (Post post : postList) {
+                    Like like = likeRepository.findByUserAndPost(user, post);
                     CreatedPostDTO createdPostDTO = new CreatedPostDTO();
-                    Boolean isLiked = likeRepository.existsByUserAndPost(user, post);
+//                    Boolean isLiked = likeRepository.existsByUserAndPost(user, post);
                     createdPostDTO.setPostId(post.getPostId());
                     createdPostDTO.setAuthor(new UserDTO(post.getUser()));
                     createdPostDTO.setContent(post.getContent());
                     createdPostDTO.setPicture(post.getPicture());
-                    createdPostDTO.setIsLiked(isLiked);
+                    createdPostDTO.setIsLiked(like.getLikeStatus());
                     createdPostDTO.setLikeCount(post.getLikeCount());
                     createdPostDTO.setCommentCount(post.getCommentCount());
                     createdPostDTO.setCreatedDate(post.getCreatedDate());
@@ -203,7 +200,8 @@ public class PostService {
 
             for (Post post : postList) {
                 // Create a PostDTO for each post
-                PostDTO postDTO = new PostDTO(post, likeRepository.existsByUserAndPost(user, post), newsService.formatDuration(post.getCreatedDate()));
+                Like like = likeRepository.findByUserAndPost(user, post);
+                PostDTO postDTO = new PostDTO(post, like.getLikeStatus(), newsService.formatDuration(post.getCreatedDate()));
 
                 // If the post has an associated Stray, add StrayDTO to PostDTO
                 if (post.getStray() != null) {
@@ -219,7 +217,6 @@ public class PostService {
                     strayDTO.setName(stray.getName());
                     strayDTO.setAge(stray.getAge());
                     strayDTO.setBehaviour(stray.getBehaviour());
-;
                     postDTO.setStrayPost(strayDTO);
                 }
 
@@ -233,13 +230,13 @@ public class PostService {
     }
 
 
-
     public Response<LikedDTO> likeOrUnlikedPost(LikeDTO likeDTO) {
         try {
             User user = userRepository.findById(likeDTO.getUser().getId()).orElseThrow(() -> new RuntimeException("User not found."));
             Post post = postRepository.findById(likeDTO.getPost().getPostId()).orElseThrow(() -> new RuntimeException("Post not found."));
-            Boolean isLiked = likeRepository.existsByUserAndPost(user, post);
-            if (isLiked) {
+            Like like = likeRepository.findByUserAndPost(user, post);
+//            Boolean isLiked = likeRepository.existsByUserAndPost(user, post);
+            if (like != null && like.getLikeStatus() == LikeStatus.LIKE) {
                 Like createdLike = likeRepository.findByUserAndPost(user, post);
 //                likeRepository.deleteById(createdLike.getId());
                 createdLike.setLikeStatus(LikeStatus.UNLIKE);
@@ -247,10 +244,19 @@ public class PostService {
                 post.setLikeCount(post.getLikeCount() - 1);
                 postRepository.save(post);
 
-                LikedDTO likedDTO = new LikedDTO();
-                likedDTO.setIsLiked(false);
+                LikedDTO likedDTO = new LikedDTO(createdLike);
+//                likedDTO.setIsLiked(false);
                 return new Response<>("success", likedDTO);
-            } else {
+            } else if (like != null && like.getLikeStatus() == LikeStatus.UNLIKE) {
+                Like createdLike = likeRepository.findByUserAndPost(user, post);
+                createdLike.setLikeStatus(LikeStatus.LIKE);
+                likeRepository.save(createdLike);
+                post.setLikeCount(post.getLikeCount() + 1);
+                postRepository.save(post);
+
+                LikedDTO likedDTO = new LikedDTO(createdLike);
+                return new Response<>("success", likedDTO);
+            } else if (like == null) {
                 Like likePost = new Like();
                 likePost.setUser(user);
                 likePost.setPost(post);
@@ -263,7 +269,7 @@ public class PostService {
                 post.setLikeCount(post.getLikeCount() + 1);
                 postRepository.save(post);
 
-                LikedDTO likedDTO = new LikedDTO(likePost, true);
+                LikedDTO likedDTO = new LikedDTO(likePost);
 
 //                User Notification
                 NotificationDTO createNotification = new NotificationDTO();
@@ -280,6 +286,8 @@ public class PostService {
                 notificationService.createNotification(createNotification);
 
                 return new Response<>("success", likedDTO);
+            } else {
+                return new Response<>("unsuccess", null);
             }
         } catch (Exception e) {
             return new Response<>("unsuccess", null);
@@ -350,12 +358,15 @@ public class PostService {
 
             // Process both created and adoption posts into PostDTO
             for (Post post : createdPostList) {
-                PostDTO postDTO = new PostDTO(post, likeRepository.existsByUserAndPost(user, post), newsService.formatDuration(post.getCreatedDate()));
+                Like like = likeRepository.findByUserAndPost(user, post);
+
+                PostDTO postDTO = new PostDTO(post, like.getLikeStatus(), newsService.formatDuration(post.getCreatedDate()));
                 postDTOList.add(postDTO);
             }
 
             for (Post post : adoptionPostList) {
-                PostDTO postDTO = new PostDTO(post, likeRepository.existsByUserAndPost(user, post), newsService.formatDuration(post.getCreatedDate()));
+                Like like = likeRepository.findByUserAndPost(user, post);
+                PostDTO postDTO = new PostDTO(post, like.getLikeStatus(), newsService.formatDuration(post.getCreatedDate()));
                 postDTOList.add(postDTO);
             }
 
@@ -369,7 +380,7 @@ public class PostService {
         try {
             // Get the current time and time one week ago
             LocalDateTime now = LocalDateTime.now();
-            LocalDateTime oneWeekAgo = now.minus(1, ChronoUnit.WEEKS);
+            LocalDateTime oneWeekAgo = now.minusWeeks(1);
 
             // Count the total posts
             long totalPosts = postRepository.count();
@@ -378,7 +389,7 @@ public class PostService {
             long postsThisWeek = postRepository.countByCreatedDateBetween(oneWeekAgo, now);
 
             // Count the posts created in the week before last
-            LocalDateTime twoWeeksAgo = now.minus(2, ChronoUnit.WEEKS);
+            LocalDateTime twoWeeksAgo = now.minusWeeks(2);
             long postsLastWeek = postRepository.countByCreatedDateBetween(twoWeeksAgo, oneWeekAgo);
 
             // Calculate the percentage increase
