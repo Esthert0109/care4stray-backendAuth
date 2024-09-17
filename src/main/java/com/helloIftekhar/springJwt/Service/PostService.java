@@ -98,7 +98,7 @@ public class PostService {
 
             for (Post post : postList) {
                 AdoptionPostDTO adoptionPost = new AdoptionPostDTO();
-                Boolean isLiked = likeRepository.existsByUserAndPost(user, post);
+                Like like = likeRepository.findByUserAndPost(user,post);
 
                 Stray stray = post.getStray();
                 if (stray.getStatus() == StrayStatus.AVAILABLE || stray.getStatus() == StrayStatus.RETURNED) {
@@ -106,8 +106,7 @@ public class PostService {
                     adoptionPost.setUser(new UserDTO(post.getUser()));
                     adoptionPost.setStray(new StrayDTO(stray));
 
-                    //                adoptionPost.setStray(new StrayDTO(post.getStray()));
-                    adoptionPost.setIsLike(isLiked);
+                    adoptionPost.setIsLike(like.getLikeStatus());
                     adoptionPost.setLikeCount(post.getLikeCount());
                     adoptionPost.setCommentCount(post.getCommentCount());
                     adoptionPost.setCreatedDate(post.getCreatedDate());

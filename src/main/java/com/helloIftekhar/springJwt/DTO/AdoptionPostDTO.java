@@ -1,6 +1,7 @@
 package com.helloIftekhar.springJwt.DTO;
 
 import com.helloIftekhar.springJwt.Bean.Post;
+import com.helloIftekhar.springJwt.Utils.Enum.LikeStatus;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -10,7 +11,7 @@ public class AdoptionPostDTO {
     private Long id;
     private UserDTO user;
     private StrayDTO stray;
-    private Boolean isLike;
+    private LikeStatus isLike;
     private int likeCount;
     private int commentCount;
     private LocalDateTime createdDate;
@@ -19,7 +20,7 @@ public class AdoptionPostDTO {
     public AdoptionPostDTO() {
     }
 
-    public AdoptionPostDTO(Post post, Boolean isLike) {
+    public AdoptionPostDTO(Post post, LikeStatus isLike) {
         this.id = post.getPostId();
         this.user = new UserDTO(post.getUser());
         this.stray = new StrayDTO(post.getStray());
