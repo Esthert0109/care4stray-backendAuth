@@ -1,5 +1,6 @@
 package com.helloIftekhar.springJwt.Bean;
 
+import com.helloIftekhar.springJwt.DTO.AdoptionApplicationDTO;
 import com.helloIftekhar.springJwt.Utils.Enum.AdoptionStatus;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -29,4 +30,15 @@ public class Adoption {
 
     @Column(name = "created_date", nullable = false)
     private LocalDateTime createdDate;
+
+    public Adoption() {
+    }
+
+    public Adoption(AdoptionApplicationDTO adoption) {
+        this.adoptionId =adoption.getAdoptionId();
+        this.user = new User(adoption.getUser());
+        this.stray = new Stray(adoption.getStray(), null);
+        this.adoptionStatus = adoption.getAdoptionStatus();
+        this.createdDate = adoption.getApplicationDate();
+    }
 }

@@ -60,6 +60,7 @@ public class Notification {
         if (notification.getLike() != null) {
             this.liked = new Like(notification.getLike());
         }
+        this.adoption = new Adoption(notification.getAdoption());
         this.message = notification.getMessage();
     }
 }
