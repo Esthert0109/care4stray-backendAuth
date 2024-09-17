@@ -5,6 +5,8 @@ import com.helloIftekhar.springJwt.Utils.Enum.NotificationType;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Data
 @Table(name = "notification")
@@ -45,6 +47,9 @@ public class Notification {
 
     @Column(name = "message")
     private String message;
+
+    @Column(name = "create_date")
+    private LocalDateTime createDate;
 
     public Notification() {
     }

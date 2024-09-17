@@ -3,14 +3,12 @@ package com.helloIftekhar.springJwt.Service;
 import com.helloIftekhar.springJwt.Bean.Notification;
 import com.helloIftekhar.springJwt.Bean.User;
 import com.helloIftekhar.springJwt.DTO.NotificationDTO;
-import com.helloIftekhar.springJwt.Repository.AdoptionRepository;
-import com.helloIftekhar.springJwt.Repository.NotificationRepository;
-import com.helloIftekhar.springJwt.Repository.PostRepository;
-import com.helloIftekhar.springJwt.Repository.UserRepository;
+import com.helloIftekhar.springJwt.Repository.*;
 import com.helloIftekhar.springJwt.Utils.Responses.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -29,10 +27,14 @@ public class NotificationService {
     @Autowired
     private AdoptionRepository adoptionRepository;
 
+    @Autowired
+    private NewsService newsService;
+
     //    create notification
     public void createNotification(NotificationDTO notificationDTO) {
         try {
             Notification notification = new Notification(notificationDTO);
+            notification.setCreateDate(LocalDateTime.now());
             notificationRepository.save(notification);
 
         } catch (Exception e) {
@@ -44,7 +46,7 @@ public class NotificationService {
         try {
             List<Notification> notifications = notificationRepository.findByReceiverIdAndSenderNotReceiver(userId);
             List<NotificationDTO> notificationDTOs = notifications.stream()
-                    .map(notification -> new NotificationDTO(notification)) // Assuming you have a constructor that accepts Notification
+                    .map(notification -> new NotificationDTO(notification, newsService.formatDuration(notification.getCreateDate()))) // Assuming you have a constructor that accepts Notification
                     .collect(Collectors.toList());
             return new Response<>("success", notificationDTOs);
         } catch (Exception e) {
@@ -67,7 +69,7 @@ public class NotificationService {
 //        }
 //    }
     private NotificationDTO createNotificationWithSenderName(Notification notification) {
-        NotificationDTO dto = new NotificationDTO(notification);
+        NotificationDTO dto = new NotificationDTO(notification, newsService.formatDuration(notification.getCreateDate()));
 
         // Fetch the sender's name using the sender's ID
         Optional<User> sender = userRepository.findById(notification.getSender().getId());

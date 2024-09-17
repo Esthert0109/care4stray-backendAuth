@@ -4,6 +4,8 @@ import com.helloIftekhar.springJwt.Bean.*;
 import com.helloIftekhar.springJwt.Utils.Enum.NotificationType;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 public class NotificationDTO {
     private long notificationId;
@@ -14,13 +16,15 @@ public class NotificationDTO {
     private LikeDTO like;
     private AdoptionApplicationDTO adoption;
     private String message;
+    private String duration;
+    private LocalDateTime createdDate;
 
 
     // Default no-args constructor
     public NotificationDTO() {}
 
     // Constructor that accepts a Notification entity
-    public NotificationDTO(Notification notification) {
+    public NotificationDTO(Notification notification, String duration) {
         this.notificationId = notification.getNotificationId();
         this.notificationType = notification.getNotificationType();
         this.receiver = new UserDTO(notification.getReceiver());
@@ -35,5 +39,7 @@ public class NotificationDTO {
             this.adoption = new AdoptionApplicationDTO(notification.getAdoption());  // Mapping AdoptionApplication
         }
         this.message = notification.getMessage();
+        this.duration = duration;
+        this.createdDate = notification.getCreateDate();
     }
 }
