@@ -99,6 +99,7 @@ public class PostService {
             for (Post post : postList) {
                 AdoptionPostDTO adoptionPost = new AdoptionPostDTO();
                 Like like = likeRepository.findByUserAndPost(user,post);
+                LikeStatus likeStatus = (like != null) ? like.getLikeStatus() : LikeStatus.UNLIKE;
 
                 Stray stray = post.getStray();
                 if (stray.getStatus() == StrayStatus.AVAILABLE || stray.getStatus() == StrayStatus.RETURNED) {
@@ -106,7 +107,7 @@ public class PostService {
                     adoptionPost.setUser(new UserDTO(post.getUser()));
                     adoptionPost.setStray(new StrayDTO(stray));
 
-                    adoptionPost.setIsLike(like.getLikeStatus());
+                    adoptionPost.setIsLike(likeStatus);
                     adoptionPost.setLikeCount(post.getLikeCount());
                     adoptionPost.setCommentCount(post.getCommentCount());
                     adoptionPost.setCreatedDate(post.getCreatedDate());
@@ -132,11 +133,13 @@ public class PostService {
                 CreatedPostDTO createdPostDTO = new CreatedPostDTO();
 //                Boolean isLiked = likeRepository.existsByUserAndPost(user, post);
                 Like like = likeRepository.findByUserAndPost(user, post);
+                LikeStatus likeStatus = (like != null) ? like.getLikeStatus() : LikeStatus.UNLIKE;
+
                 createdPostDTO.setPostId(post.getPostId());
                 createdPostDTO.setAuthor(new UserDTO(post.getUser()));
                 createdPostDTO.setContent(post.getContent());
                 createdPostDTO.setPicture(post.getPicture());
-                createdPostDTO.setIsLiked(like.getLikeStatus());
+                createdPostDTO.setIsLiked(likeStatus);
                 createdPostDTO.setLikeCount(post.getLikeCount());
                 createdPostDTO.setCommentCount(post.getCommentCount());
                 createdPostDTO.setCreatedDate(post.getCreatedDate());

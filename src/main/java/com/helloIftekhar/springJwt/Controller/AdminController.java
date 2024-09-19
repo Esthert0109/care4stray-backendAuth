@@ -42,6 +42,9 @@ public class AdminController {
     @Autowired
     private PostService postService;
 
+    @Autowired
+    private NotificationService notificationService;
+
     @GetMapping("/demo")
     public ResponseEntity<String> demo() {
         return ResponseEntity.ok("Hello from secured url");
@@ -97,6 +100,16 @@ public class AdminController {
     public ResponseEntity<Response<DonationStatisticsDTO>> getDonationStatistics() {
         try {
             Response<DonationStatisticsDTO> statisticsResponse = donationService.getDonationStatistics();
+            return ResponseEntity.ok(statisticsResponse);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new Response<>("unsuccess", null));
+        }
+    }
+
+    @GetMapping("/notificationstatistics")
+    public ResponseEntity<Response<PostStatisticsDTO>> getNotificationStatistics() {
+        try {
+            Response<PostStatisticsDTO> statisticsResponse = notificationService.getNotificationStatistics();
             return ResponseEntity.ok(statisticsResponse);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new Response<>("unsuccess", null));

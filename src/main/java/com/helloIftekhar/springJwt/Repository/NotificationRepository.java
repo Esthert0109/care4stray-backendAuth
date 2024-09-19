@@ -4,6 +4,7 @@ import com.helloIftekhar.springJwt.Bean.Notification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
@@ -18,4 +19,7 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 
 //    @Query("")
 //    List<Notification> findByNotificationTypeAdmin();
+
+    long countByCreateDateBetween(LocalDateTime startDate, LocalDateTime endDate);
+
 }

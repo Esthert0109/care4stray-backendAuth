@@ -3,6 +3,7 @@ package com.helloIftekhar.springJwt.Service;
 import com.helloIftekhar.springJwt.Bean.Notification;
 import com.helloIftekhar.springJwt.Bean.User;
 import com.helloIftekhar.springJwt.DTO.NotificationDTO;
+import com.helloIftekhar.springJwt.DTO.PostStatisticsDTO;
 import com.helloIftekhar.springJwt.Repository.*;
 import com.helloIftekhar.springJwt.Utils.Responses.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,4 +90,36 @@ public class NotificationService {
 //
 //        }
 //    }
+
+    public Response<PostStatisticsDTO> getNotificationStatistics() {
+        try {
+            // Get the current time and time one week ago
+            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime oneWeekAgo = now.minusWeeks(1);
+
+            // Count the total notifications
+            long totalNotifications = notificationRepository.count();
+
+            // Count the notifications created within the last week
+            long notificationsThisWeek = notificationRepository.countByCreateDateBetween(oneWeekAgo, now);
+
+            // Count the notifications created in the week before last
+            LocalDateTime twoWeeksAgo = now.minusWeeks(2);
+            long notificationsLastWeek = notificationRepository.countByCreateDateBetween(twoWeeksAgo, oneWeekAgo);
+
+            // Calculate the percentage increase
+            double percentageIncrease = 0;
+            if (notificationsLastWeek > 0) {
+                percentageIncrease = ((double) (notificationsThisWeek - notificationsLastWeek) / notificationsLastWeek) * 100;
+            } else if (notificationsThisWeek > 0) {
+                percentageIncrease = 100;
+            }
+
+            // Create the DTO and return the response
+            PostStatisticsDTO statisticsDTO = new PostStatisticsDTO(totalNotifications, percentageIncrease);
+            return new Response<>("success", statisticsDTO);
+        } catch (Exception e) {
+            return new Response<>("unsuccess", null);
+        }
+    }
 }
