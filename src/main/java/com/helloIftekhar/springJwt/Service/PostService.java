@@ -79,10 +79,11 @@ public class PostService {
             Post post = postRepository.findPostByPostId(postId);
             User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found."));
             Like like = likeRepository.findByUserAndPost(user, post);
+            LikeStatus likeStatus = (like != null) ? like.getLikeStatus() : LikeStatus.UNLIKE;
 //            Boolean isLiked = likeRepository.existsByUserAndPost(user, post);
             String duration = newsService.formatDuration(post.getCreatedDate());
 
-            PostDTO createdPostDTO = new PostDTO(post, like.getLikeStatus(), duration);
+            PostDTO createdPostDTO = new PostDTO(post, likeStatus, duration);
 
             return new Response<>("success", createdPostDTO);
         } catch (Exception e) {
@@ -170,13 +171,15 @@ public class PostService {
                 List<CreatedPostDTO> createdPostDTOList = new ArrayList<>();
                 for (Post post : postList) {
                     Like like = likeRepository.findByUserAndPost(user, post);
+                    LikeStatus likeStatus = (like != null) ? like.getLikeStatus() : LikeStatus.UNLIKE;
+
                     CreatedPostDTO createdPostDTO = new CreatedPostDTO();
 //                    Boolean isLiked = likeRepository.existsByUserAndPost(user, post);
                     createdPostDTO.setPostId(post.getPostId());
                     createdPostDTO.setAuthor(new UserDTO(post.getUser()));
                     createdPostDTO.setContent(post.getContent());
                     createdPostDTO.setPicture(post.getPicture());
-                    createdPostDTO.setIsLiked(like.getLikeStatus());
+                    createdPostDTO.setIsLiked(likeStatus);
                     createdPostDTO.setLikeCount(post.getLikeCount());
                     createdPostDTO.setCommentCount(post.getCommentCount());
                     createdPostDTO.setCreatedDate(post.getCreatedDate());
@@ -361,14 +364,16 @@ public class PostService {
             // Process both created and adoption posts into PostDTO
             for (Post post : createdPostList) {
                 Like like = likeRepository.findByUserAndPost(user, post);
+                LikeStatus likeStatus = (like != null) ? like.getLikeStatus() : LikeStatus.UNLIKE;
 
-                PostDTO postDTO = new PostDTO(post, like.getLikeStatus(), newsService.formatDuration(post.getCreatedDate()));
+                PostDTO postDTO = new PostDTO(post, likeStatus, newsService.formatDuration(post.getCreatedDate()));
                 postDTOList.add(postDTO);
             }
 
             for (Post post : adoptionPostList) {
                 Like like = likeRepository.findByUserAndPost(user, post);
-                PostDTO postDTO = new PostDTO(post, like.getLikeStatus(), newsService.formatDuration(post.getCreatedDate()));
+                LikeStatus likeStatus = (like != null) ? like.getLikeStatus() : LikeStatus.UNLIKE;
+                PostDTO postDTO = new PostDTO(post, likeStatus, newsService.formatDuration(post.getCreatedDate()));
                 postDTOList.add(postDTO);
             }
 

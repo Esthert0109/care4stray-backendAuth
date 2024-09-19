@@ -51,7 +51,7 @@ public class DonationService {
             createdDonation.setIsAnonymously(donation.getIsAnonymously());
             createdDonation.setAmount(donation.getAmount());
 //            createdDonation.setUser(new User(donation.getUser()));
-            createdDonation.setStatus(DonationStatus.PENDING);
+            createdDonation.setStatus(DonationStatus.UNSUCCESS);
             if(donation.getUser() == null){
                 createdDonation.setUser(null);
             }else{
