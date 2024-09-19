@@ -206,7 +206,9 @@ public class PostService {
             for (Post post : postList) {
                 // Create a PostDTO for each post
                 Like like = likeRepository.findByUserAndPost(user, post);
-                PostDTO postDTO = new PostDTO(post, like.getLikeStatus(), newsService.formatDuration(post.getCreatedDate()));
+                LikeStatus likeStatus = (like != null) ? like.getLikeStatus() : LikeStatus.UNLIKE;
+
+                PostDTO postDTO = new PostDTO(post, likeStatus, newsService.formatDuration(post.getCreatedDate()));
 
                 // If the post has an associated Stray, add StrayDTO to PostDTO
                 if (post.getStray() != null) {
