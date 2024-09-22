@@ -116,23 +116,60 @@ public class AuthenticationService {
 
     }
 
+//    public ResponseEntity<LoginResponse> authenticate(User request) {
+//        try {
+//            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+//            User user = repository.findByUsername(request.getUsername()).orElseThrow(() -> new RuntimeException("User not found"));
+//            String accessToken = jwtService.generateAccessToken(user);
+//            String refreshToken = jwtService.generateRefreshToken(user);
+//
+//            revokeAllTokenByUser(user);
+//            saveUserToken(accessToken, refreshToken, user);
+//
+//            UserDTO userLogin = new UserDTO(user);
+//
+//            return ResponseEntity.ok(new LoginResponse("Login successfully", accessToken, userLogin));
+//        } catch (BadCredentialsException e) {
+//            return ResponseEntity.badRequest().body(new LoginResponse("Invalid email or password", null, null));
+//        }
+//    }
+
     public ResponseEntity<LoginResponse> authenticate(User request) {
         try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
-            User user = repository.findByUsername(request.getUsername()).orElseThrow(() -> new RuntimeException("User not found"));
+            // Authenticate the user based on username and password
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+            );
+
+            // Fetch the user from the repository
+            User user = repository.findByUsername(request.getUsername())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            // Check if the user's status is INACTIVE
+            if (user.getUserStatus().equals(UserStatus.INACTIVE)) {
+                return ResponseEntity.badRequest().body(new LoginResponse("Account is inactive. Please contact support.", null, null));
+            }
+
+            // Generate access and refresh tokens
             String accessToken = jwtService.generateAccessToken(user);
             String refreshToken = jwtService.generateRefreshToken(user);
 
+            // Revoke any previous tokens for the user and save the new ones
             revokeAllTokenByUser(user);
             saveUserToken(accessToken, refreshToken, user);
 
+            // Create UserDTO for login response
             UserDTO userLogin = new UserDTO(user);
 
+            // Return a successful response with the tokens and user details
             return ResponseEntity.ok(new LoginResponse("Login successfully", accessToken, userLogin));
+
         } catch (BadCredentialsException e) {
-            return ResponseEntity.badRequest().body(new LoginResponse("Invalid username or password", null, null));
+            // Return an error response for invalid credentials
+            return ResponseEntity.badRequest().body(new LoginResponse("Invalid email or password", null, null));
         }
     }
+
 
     public Response<UserDTO> getUserInfoDetails(String username) {
         User user = null;
