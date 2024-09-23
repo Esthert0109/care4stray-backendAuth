@@ -201,7 +201,8 @@ public class AdoptionService {
                 selectedStray.setStatus(StrayStatus.AVAILABLE);
                 strayRepository.save(selectedStray);
 
-                adoptionRepository.delete(selectedAdoption);
+                selectedAdoption.setAdoptionStatus(AdoptionStatus.APPLICATION_CANCELLED);
+//                adoptionRepository.delete(selectedAdoption);
 
 //                admin notification
                 NotificationDTO createNotification = new NotificationDTO();
